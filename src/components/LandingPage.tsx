@@ -11,8 +11,13 @@ export default function Landing() {
         </h1>
 
         {/* Підзаголовок у колір #4E4E50 з трекінгом літер */}
-        <p className="mt-3 mb-8 max-w-xl text-xs font-medium uppercase tracking-[0.25em] text-[#4E4E50] sm:text-sm">
+        <p className="mt-3 mb-5 max-w-xl text-xs font-medium uppercase tracking-[0.25em] text-[#4E4E50] sm:text-sm">
           Одяг по вигідним цінам <span className="mx-1 text-[#6F2232]">•</span> Відправка в день замовлення <span className="mx-1 text-[#6F2232]">•</span> Накладний платіж
+        </p>
+        <p className="mb-8 max-w-2xl font-medium uppercase tracking-[0.25em] text-[#4E4E50] text-center sm:text-sm">
+          На сайті ви можете переглянути наявність товарів, але замовлення ми приймаємо тільки через інстаграм - <a href="https://www.instagram.com/barylux.ua/" target="_blank" rel="noopener noreferrer" className="text-[#950740] hover:text-[#C3073F]">
+            @barylux.ua
+          </a>
         </p>
 
         {/* Кнопка з ховером та свіченням границі */}
