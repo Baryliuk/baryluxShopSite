@@ -13,6 +13,9 @@ export default function Footer() {
           <p className="mt-1 text-xs text-[#4E4E50]">
             © {currentYear} Усі права захищені.
           </p>
+          <p className="text-xs text-[#4E4E50]">
+            Тут ви можете подивитись наявність, а замовлення оформляємо тільки в інстаграмі.
+          </p>
         </div>
 
         {/* Сервісна інформація */}
