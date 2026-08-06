@@ -24,7 +24,7 @@ export default function Landing() {
             />
             {/* Текст кнопки */}
             <span className="relative z-10">
-              Переглянути колекцію
+              Переглянути наявність
             </span>
           </button>
         </Link>
