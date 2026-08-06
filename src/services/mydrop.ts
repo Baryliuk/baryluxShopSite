@@ -18,7 +18,7 @@ export interface GroupedProduct {
 
 export async function fetchingProducts(): Promise<GroupedProduct[]> {
     const token = process.env.MY_DROP_TOKEN;
-    const url = `https://backend.mydrop.com.ua/vendor/api/export/products/prom/yml?public_api_key=${token}&price_field=drop_price&increase_price_type=absolute&increase_price_value=300&param_name=Размер&stock_sync=true&only_available=true`;
+    const url = `https://backend.mydrop.com.ua/vendor/api/export/products/prom/yml?public_api_key=${token}&price_field=drop_price&increase_price_type=absolute&increase_price_value=299&param_name=Размер&stock_sync=true`;
 
     const response = await fetch(url, { next: { revalidate: 300 } });
     if (!response.ok) throw new Error('API err');
@@ -104,4 +104,10 @@ export async function fetchingProducts(): Promise<GroupedProduct[]> {
             }))
         };
     });
+}
+export async function getProductById(groupId: string) {
+    const products = await fetchingProducts();
+    if (!products) return null;
+
+    return products.find((p) => String(p.group_id) === String(groupId)) || null;
 }

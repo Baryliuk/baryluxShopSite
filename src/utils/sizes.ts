@@ -1,47 +1,46 @@
 // src/utils/sizes.ts
 
-export interface Variant {
-  id: string;
-  size: string | number;
-  stock: boolean;
-}
+const ALLOWED_LETTER_SIZES = new Set([
+  'XXS', 'XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL', 'XXL', 'XXXL'
+]);
 
-export interface Product {
-  variants?: Variant[];
-}
+// Регулярка для числових розмірів (наприклад: 28, 30, 42, 42-43, 43.5)
+const NUMERIC_SIZE_REGEX = /^\d{2,3}(\s*[-/]\s*\d{2,3})?$/;
 
-const SIZE_ORDER = ['XXS', 'XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL'];
-
-export function extractUniqueSizes(products: Product[]): string[] {
+export function extractUniqueSizes(products: any[]): string[] {
   if (!products || !Array.isArray(products)) return [];
 
-  const sizesSet = new Set<string>();
+  const validSizes = new Set<string>();
 
   for (const product of products) {
     if (!product.variants || !Array.isArray(product.variants)) continue;
 
     for (const variant of product.variants) {
-      // 1. Перевіряємо наявність
       if (!variant.stock) continue;
 
-      // 2. Безпечно зводимо size до рядка (захист від trim is not a function)
-      const normalizedSize = String(variant.size ?? '').trim().toUpperCase();
+      let rawSize = String(variant.size ?? '').trim().toUpperCase();
 
-      if (normalizedSize) {
-        sizesSet.add(normalizedSize);
+      // 1. Відрізаємо примітки в дужках: "2XL (ПО ФАКТУ L)" -> "2XL"
+      if (rawSize.includes('(')) {
+        rawSize = rawSize.split('(')[0].trim();
+      }
+
+      // 2. СУВОРИЙ ФІЛЬТР: пропускаємо лише стандартні літери або цифрові розміри
+      const isLetterSize = ALLOWED_LETTER_SIZES.has(rawSize);
+      const isNumericSize = NUMERIC_SIZE_REGEX.test(rawSize);
+
+      if (isLetterSize || isNumericSize) {
+        validSizes.add(rawSize);
       }
     }
   }
 
-  // 3. Сортуємо за еталонною сіткою стрітвіру
-  return Array.from(sizesSet).sort((a, b) => {
-    const indexA = SIZE_ORDER.indexOf(a);
-    const indexB = SIZE_ORDER.indexOf(b);
+  // Сортування: Спочатку буквені, потім цифрові
+  return Array.from(validSizes).sort((a, b) => {
+    const isANum = !isNaN(Number(a));
+    const isBNum = !isNaN(Number(b));
 
-    if (indexA === -1 && indexB === -1) return a.localeCompare(b);
-    if (indexA === -1) return 1;
-    if (indexB === -1) return -1;
-
-    return indexA - indexB;
+    if (isANum && isBNum) return Number(a) - Number(b);
+    return a.localeCompare(b);
   });
 }
