@@ -24,7 +24,7 @@ export default function Footer() {
             <span className="mb-1 block font-semibold uppercase tracking-wider text-white">
               Доставка та оплата
             </span>
-            Накладний платіж або передоплата. Нова Пошта.
+            Накладний платіж по передоплаті. Нова Пошта.
           </div>
           
           <div className="text-xs text-[#4E4E50]">
