@@ -1,6 +1,6 @@
 // src/components/ProductCard.tsx
 import Link from 'next/link';
-import Image from 'next/image';
+
 import { ProductItem } from './ProductGrid';
 
 interface ProductCardProps {
@@ -8,7 +8,7 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-  // Форматування ціни (наприклад, 1 599 ₴)
+
   const formattedPrice = new Intl.NumberFormat('uk-UA').format(product.price);
 
   return (
