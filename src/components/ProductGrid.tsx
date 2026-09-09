@@ -33,7 +33,7 @@ export default async function ProductGrid({
   category,
   limit,
 }: ProductGridProps) {
-  const currentLimit = Number(limit) || 9;
+  const currentLimit = Number(limit) || 6;
 
   // Отримуємо дані з API MyDrop
   const rawProducts: ProductItem[] = await fetchingProducts();
