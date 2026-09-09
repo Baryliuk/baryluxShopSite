@@ -16,6 +16,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Barylux",
   description: "Barylux - відправка день в день. Замовлення тільки через інстаграм @barylux.ua",
+  verification: {
+    google: 'DjVDkyeKKLnkzTPr0PX5StkI9MJY5LOkHXrNR8nrw4w', 
+  },
 };
 
 export default function RootLayout({
@@ -25,7 +28,7 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
+      lang="uk"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">{children}</body>
