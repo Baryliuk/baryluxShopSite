@@ -1,4 +1,4 @@
-// src/app/products/page.tsx (або landing page)
+import { Suspense } from 'react';
 import ProductGrid from '@/components/ProductGrid';
 import FiltersSidebar from '@/components/FiltersSidebar';
 import Header from '@/components/Header';
@@ -25,17 +25,23 @@ export default async function ProductsPage({ searchParams }: PageProps) {
   const availableCategories = extractUniqueCategories(allProducts);
 
   return (
-    <div className="min-h-screen bg-[#1A1A1D] text-white flex flex-col justify-between selection:bg-[#950740]">
+    <div className="flex min-h-screen flex-col justify-between bg-[#0D0E12] text-zinc-100 selection:bg-orange-500 selection:text-black">
       <div>
         <Header />
-        
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+        <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
           <div className="mb-6">
-            <SearchBar />
+            <Suspense
+              fallback={
+                <div className="h-11 w-full animate-pulse rounded-xl border border-[#262933] bg-[#121319]" />
+              }
+            >
+              <SearchBar />
+            </Suspense>
           </div>
 
           {/* Лейаут: Сайдбар + Основна сітка */}
-          <div className="flex flex-col md:flex-row gap-8 items-start">
+          <div className="flex flex-col items-start gap-8 md:flex-row">
             <FiltersSidebar
               sizes={availableSizes}
               categories={availableCategories}
@@ -43,7 +49,7 @@ export default async function ProductsPage({ searchParams }: PageProps) {
               currentCategory={resolvedParams.category}
             />
 
-            <div className="flex-1 w-full min-w-0">
+            <div className="w-full min-w-0 flex-1">
               <ProductGrid
                 query={resolvedParams.query}
                 size={resolvedParams.size}

@@ -32,9 +32,16 @@ export default function LoadMoreButton({
       type="button"
       onClick={handleLoadMore}
       disabled={isPending}
-      className="rounded-xl border border-[#6F2232]/40 bg-[#121214] px-8 py-3 text-xs font-bold uppercase tracking-widest text-white shadow-lg transition-all duration-300 hover:border-[#950740] hover:bg-[#950740] hover:shadow-[0_0_20px_rgba(149,7,64,0.3)] disabled:opacity-50 disabled:cursor-not-allowed"
+      className="group relative inline-flex items-center justify-center rounded-xl border border-[#262933] bg-[#121319] px-8 py-3.5 text-xs font-extrabold uppercase tracking-widest text-white shadow-lg transition-all duration-300 hover:border-orange-500 hover:bg-orange-500 hover:text-black hover:shadow-[0_0_25px_rgba(249,115,22,0.35)] disabled:cursor-not-allowed disabled:opacity-50"
     >
-      {isPending ? 'Завантаження...' : 'Завантажити ще'}
+      {isPending ? (
+        <span className="flex items-center gap-2">
+          <span className="h-3 w-3 animate-spin rounded-full border-2 border-white border-t-transparent group-hover:border-black group-hover:border-t-transparent" />
+          Завантаження...
+        </span>
+      ) : (
+        'Завантажити ще'
+      )}
     </button>
   );
 }

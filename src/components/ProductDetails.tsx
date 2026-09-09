@@ -21,24 +21,22 @@ export default function ProductDetails({
   variants = [],
   instagramUsername = 'barylux.ua',
 }: ProductDetailsProps) {
-  // 1. Нормалізуємо варіанти: якщо після чистки назви дублюються, залишаємо повний size
+  // 1. Нормалізуємо варіанти
   const processedVariants = variants.map((v) => {
     const rawSize = String(v.size ?? '').trim();
     const cleanSize = rawSize.includes('(') ? rawSize.split('(')[0].trim() : rawSize;
     return { ...v, rawSize, cleanSize };
   });
 
-  // Перевіряємо, чи є дублікати серед cleanSize
   const cleanSizesSet = new Set(processedVariants.map((v) => v.cleanSize.toUpperCase()));
   const hasDuplicateCleanSizes = cleanSizesSet.size !== processedVariants.length;
 
   const validVariants = processedVariants.map((v) => ({
     ...v,
-    // Якщо є дублікати (як у годинниках з різними циферблатами) — показуємо повну назву v.rawSize
     displaySize: hasDuplicateCleanSizes ? v.rawSize : v.cleanSize,
   }));
 
-  // 2. Стейт прив'язуємо ВИНЯТКОВО до унікального ID варіанта
+  // 2. Стейт за унікальним ID
   const firstAvailable = validVariants.find((v) => Boolean(v.stock));
   const [selectedVariantId, setSelectedVariantId] = useState<string>(
     firstAvailable ? firstAvailable.id : validVariants[0]?.id || ''
@@ -76,19 +74,19 @@ export default function ProductDetails({
         <h1 className="text-2xl font-black text-white sm:text-3xl">{name}</h1>
         <div className="mt-3 flex items-baseline gap-2">
           <span className="text-3xl font-black text-white">{formattedPrice}</span>
-          <span className="text-base font-bold text-[#C3073F]">грн</span>
+          <span className="text-base font-bold text-orange-500">грн</span>
         </div>
       </div>
 
-      <div className="h-px w-full bg-[#6F2232]/30" />
+      <div className="h-px w-full bg-[#262933]" />
 
       <div className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
-          <span className="text-xs font-bold uppercase tracking-wider text-gray-400">
+          <span className="text-xs font-bold uppercase tracking-wider text-zinc-400">
             Оберіть варіант:
           </span>
           {selectedVariant && (
-            <span className="text-xs font-semibold text-[#C3073F]">
+            <span className="text-xs font-semibold text-orange-500">
               Вибрано: {selectedVariant.displaySize}
             </span>
           )}
@@ -97,7 +95,6 @@ export default function ProductDetails({
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
           {validVariants.map((variant) => {
             const isAvailable = Boolean(variant.stock);
-            // Порівнюємо строго по ID, а не по тексту!
             const isSelected = selectedVariantId === variant.id;
 
             return (
@@ -108,17 +105,21 @@ export default function ProductDetails({
                 onClick={() => setSelectedVariantId(variant.id)}
                 className={`group relative flex flex-col items-center justify-center rounded-xl border p-3 text-center transition-all duration-200 ${
                   !isAvailable
-                    ? 'cursor-not-allowed border-gray-800 bg-[#121214]/40 opacity-40'
+                    ? 'cursor-not-allowed border-[#262933]/50 bg-[#0D0E12]/50 opacity-40 text-zinc-600'
                     : isSelected
-                      ? 'border-[#C3073F] bg-[#950740] text-white shadow-[0_0_15px_rgba(195,7,63,0.4)]'
-                      : 'border-[#6F2232]/40 bg-[#121214] text-gray-300 hover:border-[#950740] hover:text-white'
+                      ? 'border-orange-400 bg-orange-500 text-black shadow-[0_0_15px_rgba(249,115,22,0.35)] font-extrabold'
+                      : 'border-[#262933] bg-[#121319] text-zinc-300 hover:border-orange-500/50 hover:text-white'
                 }`}
               >
-                <span className="text-xs font-black uppercase">
+                <span className="text-xs font-extrabold uppercase">
                   {variant.displaySize}
                 </span>
 
-                <span className="mt-1 text-[9px] font-medium text-gray-400 group-hover:text-gray-200">
+                <span
+                  className={`mt-1 text-[9px] font-medium ${
+                    isSelected ? 'text-black/80 font-bold' : 'text-zinc-500 group-hover:text-zinc-300'
+                  }`}
+                >
                   {isAvailable ? 'В наявності' : 'Немає'}
                 </span>
               </button>
@@ -127,14 +128,14 @@ export default function ProductDetails({
         </div>
       </div>
 
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2 pt-2">
         <a
           href={`https://ig.me/m/${instagramUsername}`}
           onClick={handleInstagramOrder}
-          className={`flex w-full items-center justify-center gap-3 rounded-2xl py-4 text-xs font-black uppercase tracking-widest text-white transition-all duration-300 ${
+          className={`flex w-full items-center justify-center gap-3 rounded-2xl py-4 text-xs font-black uppercase tracking-widest transition-all duration-300 ${
             copied
-              ? 'bg-emerald-600 shadow-[0_4px_25px_rgba(16,185,129,0.4)]'
-              : 'bg-gradient-to-r from-[#950740] to-[#C3073F] shadow-[0_4px_25px_rgba(195,7,63,0.4)]'
+              ? 'bg-emerald-500 text-black shadow-[0_4px_25px_rgba(16,185,129,0.35)]'
+              : 'bg-orange-500 text-black hover:bg-orange-400 shadow-[0_4px_25px_rgba(249,115,22,0.3)]'
           }`}
         >
           {copied ? '✓ Текст скопійовано!' : 'Замовити в Instagram'}

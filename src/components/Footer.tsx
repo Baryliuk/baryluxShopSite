@@ -2,7 +2,7 @@ export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="mt-auto w-full border-t border-[#6F2232]/30 bg-[#1A1A1D] px-6 py-10 select-none">
+    <footer className="mt-auto w-full border-t border-[#262933] bg-[#121319] px-6 py-10 select-none">
       <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-8 md:flex-row">
         
         {/* Блок бренду */}
@@ -10,24 +10,24 @@ export default function Footer() {
           <span className="font-mono text-base font-bold tracking-[0.3em] text-white">
             BARYLUX
           </span>
-          <p className="mt-1 text-xs text-[#4E4E50]">
+          <p className="mt-1 text-xs text-zinc-400">
             © {currentYear} Усі права захищені.
           </p>
-          <p className="text-xs text-[#4E4E50]">
+          <p className="text-xs text-zinc-500">
             Тут ви можете подивитись наявність, а замовлення оформляємо тільки в інстаграмі.
           </p>
         </div>
 
         {/* Сервісна інформація */}
         <div className="flex flex-col items-center gap-6 text-center sm:flex-row sm:gap-10 md:text-right">
-          <div className="text-xs text-[#4E4E50]">
+          <div className="text-xs text-zinc-400">
             <span className="mb-1 block font-semibold uppercase tracking-wider text-white">
               Доставка та оплата
             </span>
             Накладний платіж по передоплаті. Нова Пошта.
           </div>
           
-          <div className="text-xs text-[#4E4E50]">
+          <div className="text-xs text-zinc-400">
             <span className="mb-1 block font-semibold uppercase tracking-wider text-white">
               Зв'язок з нами
             </span>
@@ -35,7 +35,7 @@ export default function Footer() {
               href="https://www.instagram.com/barylux.ua/" 
               target="_blank" 
               rel="noopener noreferrer"
-              className="text-gray-400 underline transition-colors hover:text-[#C3073F]"
+              className="text-zinc-400 underline transition-colors hover:text-orange-500"
             >
               Instagram: @barylux.ua
             </a>

@@ -54,7 +54,7 @@ export default function FiltersSidebar({
   const Content = (
     <div className="flex flex-col gap-7">
       {/* Шапка та кнопка скидання */}
-      <div className="flex items-center justify-between border-b border-[#6F2232]/30 pb-4">
+      <div className="flex items-center justify-between border-b border-[#262933] pb-4">
         <span className="text-xs font-black uppercase tracking-widest text-white">
           Фільтри {activeFiltersCount > 0 && `(${activeFiltersCount})`}
         </span>
@@ -63,7 +63,7 @@ export default function FiltersSidebar({
             type="button"
             onClick={clearAll}
             disabled={isPending}
-            className="text-[11px] font-semibold text-[#C3073F] hover:text-white transition-colors"
+            className="text-[11px] font-semibold text-orange-500 hover:text-orange-400 transition-colors disabled:opacity-50"
           >
             Скинути все
           </button>
@@ -73,7 +73,7 @@ export default function FiltersSidebar({
       {/* КАТЕГОРІЇ */}
       {categories.length > 0 && (
         <div className="flex flex-col gap-3">
-          <h4 className="text-[11px] font-bold uppercase tracking-wider text-gray-400">
+          <h4 className="text-[11px] font-bold uppercase tracking-wider text-zinc-500">
             Категорії
           </h4>
           <div className="flex flex-col gap-1 max-h-60 overflow-y-auto pr-1 custom-scrollbar">
@@ -84,13 +84,14 @@ export default function FiltersSidebar({
                   key={cat.id}
                   type="button"
                   onClick={() => updateParam('category', cat.id)}
-                  className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-all duration-200 ${isActive
-                      ? 'bg-[#950740] text-white font-bold shadow-[0_0_15px_rgba(149,7,64,0.4)] border border-[#C3073F]/50'
-                      : 'text-gray-300 hover:bg-[#121214] hover:text-white border border-transparent'
-                    }`}
+                  className={`flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium transition-all duration-200 ${
+                    isActive
+                      ? 'bg-orange-500 text-black font-extrabold shadow-[0_0_15px_rgba(249,115,22,0.3)] border border-orange-400'
+                      : 'text-zinc-300 hover:bg-[#1A1C23] hover:text-white border border-transparent'
+                  }`}
                 >
                   <span className="truncate">{cat.name}</span>
-                  {isActive && <span className="h-1.5 w-1.5 rounded-full bg-white shadow-glow" />}
+                  {isActive && <span className="h-1.5 w-1.5 rounded-full bg-black" />}
                 </button>
               );
             })}
@@ -101,7 +102,7 @@ export default function FiltersSidebar({
       {/* РОЗМІРИ */}
       {sizes.length > 0 && (
         <div className="flex flex-col gap-3">
-          <h4 className="text-[11px] font-bold uppercase tracking-wider text-gray-400">
+          <h4 className="text-[11px] font-bold uppercase tracking-wider text-zinc-500">
             Розмір
           </h4>
           {/* Компактна сітка 4 колонки */}
@@ -113,10 +114,11 @@ export default function FiltersSidebar({
                   key={s}
                   type="button"
                   onClick={() => updateParam('size', s)}
-                  className={`flex h-9 items-center justify-center rounded-lg border px-1 text-[11px] font-extrabold uppercase transition-all duration-200 overflow-hidden ${isActive
-                      ? 'border-[#C3073F] bg-[#950740] text-white shadow-[0_0_12px_rgba(195,7,63,0.5)]'
-                      : 'border-[#6F2232]/40 bg-[#121214]/80 text-gray-300 hover:border-[#950740] hover:text-white'
-                    }`}
+                  className={`flex h-9 items-center justify-center rounded-lg border px-1 text-[11px] font-extrabold uppercase transition-all duration-200 overflow-hidden ${
+                    isActive
+                      ? 'border-orange-400 bg-orange-500 text-black shadow-[0_0_12px_rgba(249,115,22,0.35)]'
+                      : 'border-[#262933] bg-[#0D0E12]/80 text-zinc-400 hover:border-orange-500/50 hover:text-white'
+                  }`}
                 >
                   <span className="truncate max-w-full">{s}</span>
                 </button>
@@ -135,11 +137,11 @@ export default function FiltersSidebar({
         <button
           type="button"
           onClick={() => setIsOpenMobile(true)}
-          className="w-full flex items-center justify-between rounded-xl border border-[#6F2232]/50 bg-[#1A1A1D] px-4 py-3 text-xs font-bold uppercase text-white shadow-lg"
+          className="w-full flex items-center justify-between rounded-xl border border-[#262933] bg-[#121319] px-4 py-3 text-xs font-bold uppercase text-white shadow-lg hover:border-orange-500/40"
         >
           <span>Фільтри та категорії</span>
           {activeFiltersCount > 0 && (
-            <span className="rounded-full bg-[#950740] px-2 py-0.5 text-[10px]">
+            <span className="rounded-full bg-orange-500 text-black px-2 py-0.5 text-[10px] font-extrabold">
               {activeFiltersCount}
             </span>
           )}
@@ -147,8 +149,12 @@ export default function FiltersSidebar({
       </div>
 
       {/* DESKTOP SIDEBAR (Sticky Glassmorphic Panel) */}
-      <aside className={`hidden md:block w-64 shrink-0 transition-opacity duration-200 ${isPending ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
-        <div className="sticky top-24 rounded-2xl border border-[#6F2232]/40 bg-[#1A1A1D]/80 p-5 backdrop-blur-xl shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
+      <aside
+        className={`hidden md:block w-64 shrink-0 transition-opacity duration-200 ${
+          isPending ? 'opacity-50 pointer-events-none' : 'opacity-100'
+        }`}
+      >
+        <div className="sticky top-24 rounded-2xl border border-[#262933] bg-[#121319]/90 p-5 backdrop-blur-xl shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
           {Content}
         </div>
       </aside>
@@ -156,14 +162,14 @@ export default function FiltersSidebar({
       {/* MOBILE DRAWER (Висувна панель знизу/збоку) */}
       {isOpenMobile && (
         <div className="fixed inset-0 z-50 flex md:hidden bg-black/80 backdrop-blur-sm animate-fade-in">
-          <div className="ml-auto h-full w-4/5 max-w-xs bg-[#1A1A1D] border-l border-[#6F2232]/50 p-6 shadow-2xl overflow-y-auto flex flex-col justify-between">
+          <div className="ml-auto h-full w-4/5 max-w-xs bg-[#121319] border-l border-[#262933] p-6 shadow-2xl overflow-y-auto flex flex-col justify-between">
             <div>
               <div className="flex items-center justify-between mb-6">
                 <span className="text-sm font-black uppercase text-white">Каталог</span>
                 <button
                   type="button"
                   onClick={() => setIsOpenMobile(false)}
-                  className="text-gray-400 hover:text-white text-lg p-1"
+                  className="text-zinc-400 hover:text-white text-lg p-1"
                 >
                   ✕
                 </button>
@@ -174,7 +180,7 @@ export default function FiltersSidebar({
             <button
               type="button"
               onClick={() => setIsOpenMobile(false)}
-              className="mt-6 w-full rounded-xl bg-[#950740] py-3 text-xs font-bold uppercase text-white shadow-lg"
+              className="mt-6 w-full rounded-xl bg-orange-500 py-3 text-xs font-extrabold uppercase text-black shadow-[0_0_20px_rgba(249,115,22,0.3)] hover:bg-orange-400 transition-colors"
             >
               Застосувати
             </button>
