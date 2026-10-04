@@ -19,7 +19,6 @@ export interface GroupedProduct {
 export async function fetchingProducts(): Promise<GroupedProduct[]> {
     const token = process.env.MY_DROP_TOKEN;
     const url = `https://backend.mydrop.com.ua/vendor/api/export/products/prom/yml?public_api_key=${token}&price_field=drop_price&increase_price_type=absolute&increase_price_value=299&param_name=Размер&stock_sync=true&only_available=true`;
-
     const response = await fetch(url, { next: { revalidate: 300 } });
     if (!response.ok) throw new Error('API err');
     const xmlData = await response.text();

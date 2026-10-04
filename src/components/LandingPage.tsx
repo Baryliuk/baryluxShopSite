@@ -7,7 +7,7 @@ export default function Landing() {
       
       {/* 1. Фонова картинка */}
       <Image
-        src="/hero.jpg" 
+        src="/bh.jpg" 
         alt="Barylux background"
         fill
         priority
@@ -24,12 +24,12 @@ export default function Landing() {
 
         {/* Головний заголовок з м'яким акцентним сяйвом */}
         <h1 className="text-5xl font-black uppercase tracking-tight text-white sm:text-7xl md:text-7xl lg:text-8xl drop-shadow-[0_0_35px_rgba(249,115,22,0.12)]">
-          Стиль це — <span className="text-orange-500 drop-shadow-[0_0_35px_rgba(249,115,22,0.45)]">все</span>
+          Обери свій — <span className="text-orange-500 drop-shadow-[0_0_35px_rgba(249,115,22,0.45)]">стиль</span>
         </h1>
 
         {/* Підзаголовок з високою читабельністю */}
         <p className="mt-3 mb-6 max-w-2xl text-xs font-medium uppercase tracking-[0.25em] text-zinc-400 sm:text-sm">
-          <span className="mx-1 text-orange-500/80">•</span> Відправка в день замовлення <span className="mx-1 text-orange-500/80">•</span> Накладний платіж<span className="mx-1 text-orange-500/80">•</span>
+          <span className="mx-1 text-orange-500/80">•</span> Відправка в день замовлення <span className="mx-1 text-orange-500/80">•</span> <br/> <span className="mx-1 text-orange-500/80">•</span>Накладний платіж<span className="mx-1 text-orange-500/80">•</span>
         </p>
 
         {/* Акцентна кнопка в Industrial Vibe */}

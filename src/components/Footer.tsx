@@ -13,9 +13,6 @@ export default function Footer() {
           <p className="mt-1 text-xs text-zinc-400">
             © {currentYear} Усі права захищені.
           </p>
-          <p className="text-xs text-zinc-500">
-            Тут ви можете подивитись наявність, а замовлення оформляємо тільки в інстаграмі.
-          </p>
         </div>
 
         {/* Сервісна інформація */}
@@ -24,7 +21,7 @@ export default function Footer() {
             <span className="mb-1 block font-semibold uppercase tracking-wider text-white">
               Доставка та оплата
             </span>
-            Накладний платіж по передоплаті. Нова Пошта.
+            Накладений платіж із передоплатою за доставку. Нова Пошта.
           </div>
           
           <div className="text-xs text-zinc-400">
@@ -32,12 +29,11 @@ export default function Footer() {
               Зв'язок з нами
             </span>
             <a 
-              href="https://www.instagram.com/barylux.ua/" 
+              href="mailto:baryluxshop@gmail.com" 
               target="_blank" 
-              rel="noopener noreferrer"
               className="text-zinc-400 underline transition-colors hover:text-orange-500"
             >
-              Instagram: @barylux.ua
+              baryluxshop@gmail.com
             </a>
           </div>
         </div>

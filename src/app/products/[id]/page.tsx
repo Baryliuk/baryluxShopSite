@@ -10,7 +10,6 @@ interface PageProps {
   params: Promise<{ id: string }>;
 }
 
-// Динамічний SEO-заголовок сторінки
 export async function generateMetadata({ params }: PageProps) {
   const { id } = await params;
   const product = await getProductById(id);
