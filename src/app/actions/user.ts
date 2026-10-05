@@ -1,8 +1,8 @@
 "use server";
 
 import { auth } from "@/auth";
-import { connectToDB } from "@/lib/mongodb"; // Твоя функція підключення до MongoDB
-import User from "@/models/User"; // Твоя Mongoose модель User
+import { connectToDB } from "@/lib/mongodb";
+import User from "@/models/User";
 import { revalidatePath } from "next/cache";
 
 export interface DeliveryData {
@@ -11,32 +11,42 @@ export interface DeliveryData {
   phone: string;
 }
 
+// Проста валідація українського телефону
+const PHONE_REGEX = /^(\+?38)?0\d{9}$/;
+
 export async function updateDeliveryAddress(data: DeliveryData) {
   try {
-    // 1. Перевіряємо, чи користувач залогінений
     const session = await auth();
     if (!session?.user?.email) {
       return { success: false, error: "Неавторизований доступ" };
     }
 
-    // 2. Валідація базових полів
-    if (!data.city.trim() || !data.warehouse.trim() || !data.phone.trim()) {
+    const city = data.city.trim();
+    const warehouse = data.warehouse.trim();
+    const phone = data.phone.trim().replace(/\s+/g, "");
+
+    // 1. Перевірка на порожні поля
+    if (!city || !warehouse || !phone) {
       return { success: false, error: "Усі поля повинні бути заповнені" };
     }
 
-    // 3. Підключаємось до БД
+    // 2. Обмеження довжини (захист від спаму)
+    if (city.length > 100 || warehouse.length > 150) {
+      return { success: false, error: "Занадто довгі значення у полях" };
+    }
+
+    // 3. Валідація телефону
+    if (!PHONE_REGEX.test(phone)) {
+      return { success: false, error: "Некоректний формат телефону (наприклад, +380671234567)" };
+    }
+
     await connectToDB();
 
-    // 4. Оновлюємо дані користувача за email
     const updatedUser = await User.findOneAndUpdate(
       { email: session.user.email },
       {
         $set: {
-          deliveryAddress: {
-            city: data.city.trim(),
-            warehouse: data.warehouse.trim(),
-            phone: data.phone.trim(),
-          },
+          deliveryAddress: { city, warehouse, phone },
         },
       },
       { new: true, upsert: true }
@@ -46,9 +56,7 @@ export async function updateDeliveryAddress(data: DeliveryData) {
       return { success: false, error: "Не вдалося оновити дані" };
     }
 
-    // 5. Оновлюємо кеш Next.js для сторінки профілю
     revalidatePath("/profile");
-
     return { success: true };
   } catch (error) {
     console.error("Помилка оновлення адреси доставки:", error);

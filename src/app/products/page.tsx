@@ -1,12 +1,12 @@
-import { Suspense } from 'react';
-import ProductGrid from '@/components/ProductGrid';
-import FiltersSidebar from '@/components/FiltersSidebar';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
-import SearchBar from '@/components/SearchBar';
-import { fetchingProducts } from '@/services/mydrop';
-import { extractUniqueSizes } from '@/utils/sizes';
-import { extractUniqueCategories } from '@/utils/categories';
+import { Suspense } from "react";
+import ProductGrid from "@/components/ProductGrid";
+import FiltersSidebar from "@/components/FiltersSidebar";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import SearchBar from "@/components/SearchBar";
+import { fetchingProducts } from "@/services/mydrop";
+import { extractUniqueSizes } from "@/utils/sizes";
+import { extractUniqueCategories } from "@/utils/categories";
 
 interface PageProps {
   searchParams: Promise<{
@@ -20,6 +20,7 @@ interface PageProps {
 export default async function ProductsPage({ searchParams }: PageProps) {
   const resolvedParams = await searchParams;
 
+  // Паралельно фетчимо каталог для фільтрів (завдяки React cache у mydrop.ts це 0 затримок)
   const allProducts = await fetchingProducts();
   const availableSizes = extractUniqueSizes(allProducts);
   const availableCategories = extractUniqueCategories(allProducts);
@@ -50,12 +51,26 @@ export default async function ProductsPage({ searchParams }: PageProps) {
             />
 
             <div className="w-full min-w-0 flex-1">
-              <ProductGrid
-                query={resolvedParams.query}
-                size={resolvedParams.size}
-                category={resolvedParams.category}
-                limit={resolvedParams.limit}
-              />
+              <Suspense
+                key={JSON.stringify(resolvedParams)}
+                fallback={
+                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                    {Array.from({ length: 6 }).map((_, i) => (
+                      <div
+                        key={i}
+                        className="h-80 w-full animate-pulse rounded-2xl border border-[#262933] bg-[#121319]"
+                      />
+                    ))}
+                  </div>
+                }
+              >
+                <ProductGrid
+                  query={resolvedParams.query}
+                  size={resolvedParams.size}
+                  category={resolvedParams.category}
+                  limit={resolvedParams.limit}
+                />
+              </Suspense>
             </div>
           </div>
         </main>

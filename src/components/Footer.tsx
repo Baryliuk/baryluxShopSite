@@ -30,7 +30,6 @@ export default function Footer() {
             </span>
             <a 
               href="mailto:baryluxshop@gmail.com" 
-              target="_blank" 
               className="text-zinc-400 underline transition-colors hover:text-orange-500"
             >
               baryluxshop@gmail.com

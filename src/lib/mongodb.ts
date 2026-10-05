@@ -29,6 +29,7 @@ export async function connectToDB() {
   if (!cached.promise) {
     const opts = {
       bufferCommands: false,
+      serverSelectionTimeoutMS: 5000, // Таймаут 5 секунд, щоб запити не висіли вічно при збої мережі
     };
 
     cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongooseInstance) => {

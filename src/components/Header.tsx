@@ -1,6 +1,10 @@
 import Link from "next/link";
 
-export default function Header() {
+interface HeaderProps {
+  cartCount?: number;
+}
+
+export default function Header({ cartCount = 0 }: HeaderProps) {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-[#262933] bg-[#0D0E12]/80 backdrop-blur-md transition-all text-white">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
@@ -17,6 +21,14 @@ export default function Header() {
 
         {/* Навігація та іконки */}
         <div className="flex items-center gap-5">
+          {/* Каталог */}
+          <Link
+            href="/products"
+            className="text-xs font-bold uppercase tracking-wider text-zinc-400 transition-colors hover:text-orange-500 hidden sm:block"
+          >
+            Каталог
+          </Link>
+
           {/* Особистий Кабінет */}
           <Link
             href="/profile"
@@ -52,10 +64,13 @@ export default function Header() {
               <line x1="3" y1="6" x2="21" y2="6" />
               <path d="M16 10a4 4 0 0 1-8 0" />
             </svg>
-            {/* Бедж кількості товарів (опціонально) */}
-            <span className="absolute -right-1.5 -top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-orange-500 text-[10px] font-bold text-black">
-              0
-            </span>
+
+            {/* Бедж відображається тільки якщо в кошику є товари */}
+            {cartCount > 0 && (
+              <span className="absolute -right-1.5 -top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-orange-500 text-[10px] font-bold text-black animate-in fade-in zoom-in">
+                {cartCount > 99 ? "99+" : cartCount}
+              </span>
+            )}
           </Link>
         </div>
 

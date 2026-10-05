@@ -53,7 +53,7 @@ export default async function ProductGrid({
           .filter((v) => v.stock)
           .map((v) => {
             const s = String(v.size ?? '').trim().toUpperCase();
-            return s.includes('(') ? s.split('(')[0].trim() : s;
+            return s.includes('(') ? s.split('(')[0]?.trim() ?? s : s;
           })
           .filter(Boolean)
       )
@@ -94,8 +94,8 @@ export default async function ProductGrid({
     });
   }
 
-  // 5. Сортування (нові зверху) та Пагінація
-  const reversedProducts = filtered.toReversed();
+  // 5. Безопасна реверсія масиву без залежності від ES2023 toReversed
+  const reversedProducts = [...filtered].reverse();
   const displayedProducts = reversedProducts.slice(0, currentLimit);
   const hasMore = reversedProducts.length > currentLimit;
 
@@ -117,8 +117,12 @@ export default async function ProductGrid({
     <div className="flex w-full flex-col gap-10">
       {/* Адаптивна сітка каталогу */}
       <div className="grid w-full grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {displayedProducts.map((product) => (
-          <ProductCard key={product.group_id} product={product} />
+        {displayedProducts.map((product, index) => (
+          <ProductCard
+            key={product.group_id}
+            product={product}
+            priority={index < 3} // Перші 3 картки завантажуються з пріоритетом для кращого LCP
+          />
         ))}
       </div>
 

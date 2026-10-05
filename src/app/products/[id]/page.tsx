@@ -70,10 +70,11 @@ export default async function ProductPage({ params }: PageProps) {
             {/* ПРАВА КОЛОНКА: Деталі, Розміри та Instagram CTA */}
             <div className="rounded-3xl border border-[#262933] bg-[#121319]/80 p-6 backdrop-blur-xl sm:p-8">
               <ProductDetails
+                groupId={product.group_id}
                 name={product.name}
                 price={product.price}
-                variants={product.variants || []}
-                instagramUsername="barylux.ua"
+                image={product.image}
+                variants={product.variants}
               />
             </div>
           </div>

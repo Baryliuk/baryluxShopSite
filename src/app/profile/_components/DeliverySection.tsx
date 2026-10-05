@@ -20,7 +20,6 @@ export default function DeliverySection({ details }: { details?: DeliveryDetails
     phone: details?.phone || "",
   });
 
-  // Синхронізуємо локальний стейт при зміні серверних даних
   useEffect(() => {
     if (details) {
       setFormData({
@@ -41,8 +40,18 @@ export default function DeliverySection({ details }: { details?: DeliveryDetails
       if (result.success) {
         setIsEditing(false);
       } else {
-        setErrorMessage(result.error || "Щось пішло не так");
+        setErrorMessage(result.error || "Щось пішло не так при збереженні адреси");
       }
+    });
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    setErrorMessage(null);
+    setFormData({
+      city: details?.city || "",
+      warehouse: details?.warehouse || "",
+      phone: details?.phone || "",
     });
   };
 
@@ -59,8 +68,9 @@ export default function DeliverySection({ details }: { details?: DeliveryDetails
       {isEditing ? (
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="text-xs text-zinc-400">Місто</label>
+            <label htmlFor="city-input" className="text-xs text-zinc-400">Місто</label>
             <input
+              id="city-input"
               type="text"
               value={formData.city}
               onChange={(e) => setFormData({ ...formData, city: e.target.value })}
@@ -70,8 +80,9 @@ export default function DeliverySection({ details }: { details?: DeliveryDetails
           </div>
 
           <div>
-            <label className="text-xs text-zinc-400">Відділення</label>
+            <label htmlFor="warehouse-input" className="text-xs text-zinc-400">Відділення</label>
             <input
+              id="warehouse-input"
               type="text"
               value={formData.warehouse}
               onChange={(e) => setFormData({ ...formData, warehouse: e.target.value })}
@@ -81,8 +92,9 @@ export default function DeliverySection({ details }: { details?: DeliveryDetails
           </div>
 
           <div>
-            <label className="text-xs text-zinc-400">Телефон</label>
+            <label htmlFor="phone-input" className="text-xs text-zinc-400">Телефон</label>
             <input
+              id="phone-input"
               type="text"
               value={formData.phone}
               onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
@@ -91,7 +103,7 @@ export default function DeliverySection({ details }: { details?: DeliveryDetails
             />
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex gap-2 pt-1">
             <button
               type="submit"
               disabled={isPending}
@@ -101,8 +113,8 @@ export default function DeliverySection({ details }: { details?: DeliveryDetails
             </button>
             <button
               type="button"
-              onClick={() => setIsEditing(false)}
-              className="rounded-xl border border-[#262933] bg-white/5 px-4 py-2 text-sm text-zinc-400 hover:text-white"
+              onClick={handleCancel}
+              className="rounded-xl border border-[#262933] bg-white/5 px-4 py-2 text-sm text-zinc-400 hover:text-white transition"
             >
               Скасувати
             </button>
@@ -110,7 +122,6 @@ export default function DeliverySection({ details }: { details?: DeliveryDetails
         </form>
       ) : (
         <>
-          {/* Показуємо formData замість details, щоб UI реагував миттєво */}
           <div className="rounded-xl border border-white/5 bg-white/[0.02] p-4 space-y-3">
             <div>
               <p className="text-xs text-zinc-500 uppercase tracking-wider">Місто</p>
@@ -127,6 +138,7 @@ export default function DeliverySection({ details }: { details?: DeliveryDetails
           </div>
 
           <button
+            type="button"
             onClick={() => setIsEditing(true)}
             className="mt-4 w-full rounded-xl border border-[#262933] bg-white/5 py-2.5 text-sm font-medium text-zinc-300 transition hover:border-orange-500/40 hover:text-white"
           >

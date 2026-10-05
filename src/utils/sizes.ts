@@ -22,7 +22,7 @@ export function extractUniqueSizes(products: any[]): string[] {
 
       // 1. Відрізаємо примітки в дужках: "2XL (ПО ФАКТУ L)" -> "2XL"
       if (rawSize.includes('(')) {
-        rawSize = rawSize.split('(')[0].trim();
+       rawSize = rawSize.split('(')[0]?.trim() ?? rawSize;
       }
 
       // 2. СУВОРИЙ ФІЛЬТР: пропускаємо лише стандартні літери або цифрові розміри

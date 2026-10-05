@@ -21,7 +21,6 @@ export default function LoadMoreButton({
     const params = new URLSearchParams(searchParams.toString());
     params.set('limit', String(currentLimit + step));
 
-    // { scroll: false } блокує відмотку сторінки наверх
     startTransition(() => {
       router.push(`${pathname}?${params.toString()}`, { scroll: false });
     });
@@ -32,6 +31,7 @@ export default function LoadMoreButton({
       type="button"
       onClick={handleLoadMore}
       disabled={isPending}
+      aria-busy={isPending}
       className="group relative inline-flex items-center justify-center rounded-xl border border-[#262933] bg-[#121319] px-8 py-3.5 text-xs font-extrabold uppercase tracking-widest text-white shadow-lg transition-all duration-300 hover:border-orange-500 hover:bg-orange-500 hover:text-black hover:shadow-[0_0_25px_rgba(249,115,22,0.35)] disabled:cursor-not-allowed disabled:opacity-50"
     >
       {isPending ? (

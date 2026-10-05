@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useState, useEffect, useTransition } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 import { Category } from '@/utils/categories';
 
@@ -25,6 +25,18 @@ export default function FiltersSidebar({
 
   const activeFiltersCount = (currentSize ? 1 : 0) + (currentCategory ? 1 : 0);
 
+  // Блокування скролу сторінки, коли відкрита мобільна шторка
+  useEffect(() => {
+    if (isOpenMobile) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isOpenMobile]);
+
   const updateParam = (key: string, value: string) => {
     const params = new URLSearchParams(searchParams.toString());
 
@@ -33,7 +45,7 @@ export default function FiltersSidebar({
     } else {
       params.set(key, value);
     }
-    params.delete('limit'); // Скидаємо пагінацію
+    params.delete('limit');
 
     startTransition(() => {
       router.push(`${pathname}?${params.toString()}`, { scroll: false });
@@ -53,7 +65,6 @@ export default function FiltersSidebar({
 
   const Content = (
     <div className="flex flex-col gap-7">
-      {/* Шапка та кнопка скидання */}
       <div className="flex items-center justify-between border-b border-[#262933] pb-4">
         <span className="text-xs font-black uppercase tracking-widest text-white">
           Фільтри {activeFiltersCount > 0 && `(${activeFiltersCount})`}
@@ -70,7 +81,6 @@ export default function FiltersSidebar({
         )}
       </div>
 
-      {/* КАТЕГОРІЇ */}
       {categories.length > 0 && (
         <div className="flex flex-col gap-3">
           <h4 className="text-[11px] font-bold uppercase tracking-wider text-zinc-500">
@@ -99,13 +109,11 @@ export default function FiltersSidebar({
         </div>
       )}
 
-      {/* РОЗМІРИ */}
       {sizes.length > 0 && (
         <div className="flex flex-col gap-3">
           <h4 className="text-[11px] font-bold uppercase tracking-wider text-zinc-500">
             Розмір
           </h4>
-          {/* Компактна сітка 4 колонки */}
           <div className="grid grid-cols-4 gap-1.5">
             {sizes.map((s) => {
               const isActive = currentSize?.toUpperCase() === s.toUpperCase();
@@ -132,7 +140,6 @@ export default function FiltersSidebar({
 
   return (
     <>
-      {/* Кнопка відкриття для мобілок (показується тільки на екранах < md) */}
       <div className="md:hidden w-full mb-4">
         <button
           type="button"
@@ -148,7 +155,6 @@ export default function FiltersSidebar({
         </button>
       </div>
 
-      {/* DESKTOP SIDEBAR (Sticky Glassmorphic Panel) */}
       <aside
         className={`hidden md:block w-64 shrink-0 transition-opacity duration-200 ${
           isPending ? 'opacity-50 pointer-events-none' : 'opacity-100'
@@ -159,7 +165,6 @@ export default function FiltersSidebar({
         </div>
       </aside>
 
-      {/* MOBILE DRAWER (Висувна панель знизу/збоку) */}
       {isOpenMobile && (
         <div className="fixed inset-0 z-50 flex md:hidden bg-black/80 backdrop-blur-sm animate-fade-in">
           <div className="ml-auto h-full w-4/5 max-w-xs bg-[#121319] border-l border-[#262933] p-6 shadow-2xl overflow-y-auto flex flex-col justify-between">

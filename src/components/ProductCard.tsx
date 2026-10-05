@@ -1,14 +1,13 @@
 import Link from 'next/link';
 import Image from 'next/image';
-
 import { ProductItem } from './ProductGrid';
 
 interface ProductCardProps {
   product: ProductItem;
+  priority?: boolean;
 }
 
-export default function ProductCard({ product }: ProductCardProps) {
-
+export default function ProductCard({ product, priority = false }: ProductCardProps) {
   const formattedPrice = new Intl.NumberFormat('uk-UA').format(product.price);
 
   return (
@@ -23,6 +22,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             src={product.image}
             alt={product.name}
             fill
+            priority={priority}
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             className="object-cover object-center transition-transform duration-500 ease-out group-hover:scale-105"
           />
@@ -32,7 +32,6 @@ export default function ProductCard({ product }: ProductCardProps) {
           </div>
         )}
 
-        {/* Затемнення зображення при наведенні */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
 
         {/* 2. РОЗМІРИ: Hover Overlay */}
@@ -76,7 +75,6 @@ export default function ProductCard({ product }: ProductCardProps) {
             </span>
           </div>
 
-          {/* Індикатор переходу */}
           <span className="flex h-8 w-8 items-center justify-center rounded-xl border border-[#262933] bg-[#1A1C23] text-zinc-400 transition-all duration-300 group-hover:border-orange-500 group-hover:bg-orange-500 group-hover:text-black">
             →
           </span>
