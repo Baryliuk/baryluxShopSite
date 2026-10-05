@@ -7,7 +7,13 @@ const nextConfig: NextConfig = {
         protocol: 'https',
         hostname: 'backend.mydrop.com.ua',
         port: '',
-        pathname: '/**', // Дозволяє будь-які шляхи на цьому домені
+        pathname: '/**', // Зображення товарів MyDrop
+      },
+      {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com',
+        port: '',
+        pathname: '/**', // Аватарки Google OAuth
       },
     ],
   },

@@ -6,29 +6,57 @@ export default function Header() {
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
 
         {/* Логотип */}
-       <Link 
-  href="/" 
-  className="group font-sans text-xl font-black tracking-wider text-white transition-colors"
->
-  <span className="text-orange-500 transition-colors group-hover:text-white">[</span>
-  <span className="px-1 text-white">BARYLUX</span>
-  <span className="text-orange-500 transition-colors group-hover:text-white">]</span>
-</Link>
+        <Link 
+          href="/" 
+          className="group font-sans text-xl font-black tracking-wider text-white transition-colors"
+        >
+          <span className="text-orange-500 transition-colors group-hover:text-white">[</span>
+          <span className="px-1 text-white">BARYLUX</span>
+          <span className="text-orange-500 transition-colors group-hover:text-white">]</span>
+        </Link>
 
         {/* Навігація та іконки */}
         <div className="flex items-center gap-5">
-          {/* Instagram */}
-          <a
-            href="https://www.instagram.com/barylux.ua/"
-            target="_blank"
-            rel="noopener noreferrer"
+          {/* Особистий Кабінет */}
+          <Link
+            href="/profile"
             className="text-zinc-400 transition-colors hover:text-orange-500"
-            aria-label="Instagram"
+            aria-label="Особистий кабінет"
           >
-            <svg className="h-6 w-6 fill-current" viewBox="0 0 24 24">
-              <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+            <svg
+              className="h-6 w-6 stroke-current fill-none"
+              viewBox="0 0 24 24"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
             </svg>
-          </a>
+          </Link>
+
+          {/* Кошик */}
+          <Link
+            href="/cart"
+            className="relative text-zinc-400 transition-colors hover:text-orange-500"
+            aria-label="Кошик"
+          >
+            <svg
+              className="h-6 w-6 stroke-current fill-none"
+              viewBox="0 0 24 24"
+              strokeWidth="1.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z" />
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <path d="M16 10a4 4 0 0 1-8 0" />
+            </svg>
+            {/* Бедж кількості товарів (опціонально) */}
+            <span className="absolute -right-1.5 -top-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-orange-500 text-[10px] font-bold text-black">
+              0
+            </span>
+          </Link>
         </div>
 
       </div>

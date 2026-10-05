@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="100%" height="100%">
+  <style>
+    /* Фон за замовчуванням (для темної теми браузера) */
+    .bg { fill: #0D0E12; rx: 8px; }
+    .bracket { fill: #F97316; font-weight: 900; }
+    .text { fill: #FFFFFF; font-weight: 900; font-family: system-ui, -apple-system, sans-serif; }
+
+    /* Якщо у користувача світла тема ОС/браузера */
+    @media (prefers-color-scheme: light) {
+      .bg { fill: #18181B; } /* залишаємо темний кастомний квадрат, щоб біла літера 'B' була виразною */
+    }
+  </style>
+  
+  <!-- Темна заокруглена підкладка -->
+  <rect class="bg" width="32" height="32" />
+
+  <!-- Текст логотипу [B] -->
+  <text x="16" y="22" text-anchor="middle" font-size="20">
+    <tspan class="bracket">[</tspan>
+    <tspan class="text">B</tspan>
+    <tspan class="bracket">]</tspan>
+  </text>
+</svg>

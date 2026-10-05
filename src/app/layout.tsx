@@ -22,7 +22,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Barylux shop",
-  description: "Barylux - відправка день в день. Замовлення тільки через інстаграм @barylux.ua",
+  description: "Barylux - відправка день в день.",
   verification: {
     google: 'DjVDkyeKKLnkzTPr0PX5StkI9MJY5LOkHXrNR8nrw4w', 
   },
