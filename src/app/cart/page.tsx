@@ -254,8 +254,8 @@ export default function CartPage() {
                   </div>
                   <div className="flex items-center justify-between">
                     <span>Доставка</span>
-                    <span className={shipping === 0 ? "text-emerald-300 font-semibold" : ""}>
-                      {shipping === 0 ? "Безкоштовно" : `${formatPrice(shipping)} грн`}
+                    <span className=" font-semibold">
+                     За тарифами Нової Пошти
                     </span>
                   </div>
                   <div className="flex items-center justify-between border-t border-white/10 pt-3 text-base font-semibold text-white">
