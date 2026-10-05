@@ -1,17 +1,10 @@
 import mongoose from "mongoose";
 
-const MONGODB_URI = process.env.MONGODB_URI;
-
-if (!MONGODB_URI) {
-  throw new Error("Будь ласка, вкажіть MONGODB_URI у файлі .env.local");
-}
-
 interface MongooseCache {
   conn: typeof mongoose | null;
   promise: Promise<typeof mongoose> | null;
 }
 
-// Розширюємо глобальний об'єкт Node.js для збереження кешу між гарячими перезавантаженнями у dev-режимі
 declare global {
   var mongooseCache: MongooseCache | undefined;
 }
@@ -23,6 +16,12 @@ if (!global.mongooseCache) {
 }
 
 export async function connectToDB() {
+  const MONGODB_URI = process.env.MONGODB_URI;
+
+  if (!MONGODB_URI) {
+    throw new Error("Будь ласка, вкажіть MONGODB_URI у змінних оточення.");
+  }
+
   if (cached.conn) {
     return cached.conn;
   }
@@ -32,8 +31,8 @@ export async function connectToDB() {
       bufferCommands: false,
     };
 
-    cached.promise = mongoose.connect(MONGODB_URI!, opts).then((mongoose) => {
-      return mongoose;
+    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongooseInstance) => {
+      return mongooseInstance;
     });
   }
 
