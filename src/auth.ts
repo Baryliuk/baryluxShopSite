@@ -27,7 +27,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                 image: user.image,
               },
             },
-            { upsert: true, new: true, lean: true }
+            { upsert: true, returnDocument: "after", lean: true },
           );
 
           if (dbUser) {
@@ -36,8 +36,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
           return true;
         } catch (error) {
-          console.error("Помилка авторизації/БД:", error);
-          return false;
+          // 🚨 ПОДИВИСЬ У ТЕРМІНАЛ СЕРВЕРА — ТУТ БУДЕ ТОЧНА ПРИЧИНА!
+          console.error("🔥 CRITICAL SIGNIN DB ERROR:", error);
+
+          // Повертаємо true, щоб NextAuth НЕ блокував вхід, навіть якщо запис у БД зірвався
+          return true;
         }
       }
       return true;
