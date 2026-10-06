@@ -1,5 +1,6 @@
 import NextAuth from "next-auth";
-import Google from "next-auth/providers/google";
+import Google from "google-provider-or-auth-js"; // або Google з next-auth/providers/google
+import GoogleProvider from "next-auth/providers/google";
 import { connectToDB } from "@/lib/mongodb";
 import User from "@/models/User";
 
@@ -7,38 +8,55 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   trustHost: true,
   secret: process.env.AUTH_SECRET,
   providers: [
-    Google({
+    GoogleProvider({
       clientId: process.env.AUTH_GOOGLE_ID,
       clientSecret: process.env.AUTH_GOOGLE_SECRET,
     }),
   ],
   callbacks: {
-    // 1. Автоматично створюємо/оновлюємо користувача в БД при вході через Google
     async signIn({ user, account }) {
       if (account?.provider === "google" && user.email) {
         try {
           await connectToDB();
-          const existingUser = await User.findOne({ email: user.email });
 
-          if (!existingUser) {
-            await User.create({
-              name: user.name,
-              email: user.email,
-              image: user.image,
-            });
+          // Оновлюємо або створюємо користувача та повертаємо _id
+          const dbUser = await User.findOneAndUpdate(
+            { email: user.email },
+            {
+              $setOnInsert: {
+                name: user.name,
+                email: user.email,
+                image: user.image,
+              },
+            },
+            { upsert: true, new: true, lean: true }
+          );
+
+          // Записуємо MongoDB _id в об'єкт user, щоб підхопити його в jwt без повторного запиту
+          if (dbUser) {
+            user.id = dbUser._id.toString();
           }
+
+          return true;
         } catch (error) {
-          console.error("Помилка збереження користувача в БД при signIn:", error);
-          // Не блокуємо вхід, навіть якщо БД тимчасово недоступна
+          console.error("Помилка реєстрації/входу в DB:", error);
+          return false;
         }
       }
       return true;
     },
 
-    // 2. Передаємо ID користувача у сесію
+    async jwt({ token, user }) {
+      // Trigger тільки при авторизації! Жодних await connectToDB() тут!
+      if (user) {
+        token.id = user.id;
+      }
+      return token;
+    },
+
     async session({ session, token }) {
-      if (session.user && token.sub) {
-        session.user.id = token.sub;
+      if (session.user && token.id) {
+        session.user.id = token.id as string;
       }
       return session;
     },

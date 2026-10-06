@@ -12,7 +12,7 @@ import DeliverySection from "./_components/DeliverySection";
 export default async function ProfilePage() {
   const session = await auth();
 
-  // 1. ЯКЩО НЕМАЄ СЕСІЇ — ПОКАЗУЄМО БЛОК ВХОДУ
+  // 1. ЯКЩО НЕМАЄ СЕСІЇ — ПОКАЗУЄМО БЛОК ВХОДУ (Миттєвий рендер без DB)
   if (!session?.user) {
     return (
       <div className="flex min-h-screen flex-col justify-between bg-[#0D0E12] text-zinc-100 selection:bg-orange-500 selection:text-black">
@@ -51,7 +51,7 @@ export default async function ProfilePage() {
                     d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.3-6.4-5.2L1.9 16c1.8 3.7 5.6 7 10.1 7z"
                   />
                 </svg>
-                Увійти через Google
+                Увійдіть через Google
               </button>
             </form>
           </div>
@@ -62,9 +62,20 @@ export default async function ProfilePage() {
     );
   }
 
-  // 2. ЯКЩО СЕСІЯ Є — ФЕТЧИМО ДАНІ З МАРШРУТУ МАНГО
-  await connectToDB();
-  const dbUser = await User.findOne({ email: session.user.email }).lean();
+  // 2. ФЕТЧИМО ДАНІ З МАНГО З БЕЗПЕЧНОЮ СЕРІАЛІЗАЦІЄЮ ТА TRY/CATCH
+  let deliveryAddress = null;
+
+  try {
+    await connectToDB();
+    const dbUser = await User.findOne({ email: session.user.email }).lean();
+
+    if (dbUser?.deliveryAddress) {
+      // Серіалізуємо BSON об'єкт у чистий JSON, щоб прибрати ObjectId та полегшити пропси
+      deliveryAddress = JSON.parse(JSON.stringify(dbUser.deliveryAddress));
+    }
+  } catch (error) {
+    console.error("Profile page DB error:", error);
+  }
 
   return (
     <div className="flex min-h-screen flex-col justify-between bg-[#0D0E12] text-zinc-100 selection:bg-orange-500 selection:text-black">
@@ -75,8 +86,7 @@ export default async function ProfilePage() {
 
         <div className="mt-8 grid gap-8 md:grid-cols-[1.6fr_1fr]">
           <OrderHistory orders={[]} />
-          {/* ПЕРЕДАЄМО РЕАЛЬНІ ДАНІ З БД В СІТКУ */}
-          <DeliverySection details={dbUser?.deliveryAddress || null} />
+          <DeliverySection details={deliveryAddress} />
         </div>
       </main>
 
