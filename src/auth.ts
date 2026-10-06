@@ -1,5 +1,4 @@
 import NextAuth from "next-auth";
-import Google from "google-provider-or-auth-js"; // або Google з next-auth/providers/google
 import GoogleProvider from "next-auth/providers/google";
 import { connectToDB } from "@/lib/mongodb";
 import User from "@/models/User";
@@ -19,7 +18,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         try {
           await connectToDB();
 
-          // Оновлюємо або створюємо користувача та повертаємо _id
           const dbUser = await User.findOneAndUpdate(
             { email: user.email },
             {
@@ -32,14 +30,13 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             { upsert: true, new: true, lean: true }
           );
 
-          // Записуємо MongoDB _id в об'єкт user, щоб підхопити його в jwt без повторного запиту
           if (dbUser) {
             user.id = dbUser._id.toString();
           }
 
           return true;
         } catch (error) {
-          console.error("Помилка реєстрації/входу в DB:", error);
+          console.error("Помилка авторизації/БД:", error);
           return false;
         }
       }
@@ -47,7 +44,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
 
     async jwt({ token, user }) {
-      // Trigger тільки при авторизації! Жодних await connectToDB() тут!
       if (user) {
         token.id = user.id;
       }
