@@ -33,19 +33,18 @@ export default async function ProductGrid({
   limit,
 }: ProductGridProps) {
   const currentLimit = Number(limit) || 6;
-
-  // Отримуємо дані з API MyDrop
   const rawProducts: ProductItem[] = await fetchingProducts();
 
   if (!rawProducts || rawProducts.length === 0) {
     return (
-      <div className="flex min-h-[400px] w-full flex-col items-center justify-center rounded-2xl border border-dashed border-[#262933] bg-[#121319]/60 p-8 text-center backdrop-blur-sm">
-        <p className="text-sm font-semibold text-zinc-400">Каталог порожній.</p>
+      <div className="flex min-h-[350px] w-full flex-col items-center justify-center rounded-2xl border border-dashed border-[#1C1E24] bg-[#0E0E11] p-8 text-center">
+        <p className="text-xs font-semibold uppercase tracking-widest text-zinc-500">
+          Каталог порожній
+        </p>
       </div>
     );
   }
 
-  // 1. Нормалізація розмірів усередині кожного товару
   let filtered = rawProducts.map((product) => {
     const availableSizes = Array.from(
       new Set(
@@ -65,7 +64,6 @@ export default async function ProductGrid({
     };
   });
 
-  // 2. Фільтр: Пошуковий запит
   if (query) {
     const normalizedQuery = query.trim().toLowerCase();
     filtered = filtered.filter((product) =>
@@ -73,7 +71,6 @@ export default async function ProductGrid({
     );
   }
 
-  // 3. Фільтр: Розмір
   if (size) {
     const selectedSize = size.trim().toUpperCase();
     filtered = filtered.filter((product) =>
@@ -81,7 +78,6 @@ export default async function ProductGrid({
     );
   }
 
-  // 4. Фільтр: Категорія
   if (category) {
     const catIdStr = String(category);
     filtered = filtered.filter((product) => {
@@ -94,41 +90,37 @@ export default async function ProductGrid({
     });
   }
 
-  // 5. Безопасна реверсія масиву без залежності від ES2023 toReversed
   const reversedProducts = [...filtered].reverse();
   const displayedProducts = reversedProducts.slice(0, currentLimit);
   const hasMore = reversedProducts.length > currentLimit;
 
-  // Порожній стан при відсутності збігів по фільтрах
   if (reversedProducts.length === 0) {
     return (
-      <div className="flex min-h-[350px] w-full flex-col items-center justify-center rounded-2xl border border-dashed border-[#262933] bg-[#121319]/40 p-8 text-center backdrop-blur-sm">
-        <p className="text-sm font-bold text-zinc-200">
-          За вашим запитом товарів не знайдено
+      <div className="flex min-h-[300px] w-full flex-col items-center justify-center rounded-2xl border border-dashed border-[#1C1E24] bg-[#0E0E11] p-8 text-center">
+        <p className="text-xs font-bold uppercase tracking-wider text-zinc-300">
+          Товарів не знайдено
         </p>
-        <p className="mt-1 text-xs text-zinc-500">
-          Спробуйте вибрати інший розмір або скинути категорію.
+        <p className="mt-1 text-[11px] text-zinc-500">
+          Спробуйте скинути фільтри або обрати інший розмір.
         </p>
       </div>
     );
   }
 
   return (
-    <div className="flex w-full flex-col gap-10">
-      {/* Адаптивна сітка каталогу */}
+    <div className="flex w-full flex-col gap-12">
       <div className="grid w-full grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {displayedProducts.map((product, index) => (
           <ProductCard
             key={product.group_id}
             product={product}
-            priority={index < 3} // Перші 3 картки завантажуються з пріоритетом для кращого LCP
+            priority={index < 3}
           />
         ))}
       </div>
 
-      {/* Кнопка "Завантажити ще" */}
       {hasMore && (
-        <div className="flex justify-center pt-4">
+        <div className="flex justify-center">
           <LoadMoreButton currentLimit={currentLimit} step={9} />
         </div>
       )}

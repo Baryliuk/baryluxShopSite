@@ -17,7 +17,6 @@ interface ProductDetailsProps {
   variants: Variant[];
 }
 
-// Допоміжна перевірка наявності товару
 function checkStock(stock: boolean | string | number): boolean {
   if (typeof stock === 'boolean') return stock;
   if (typeof stock === 'string') return stock.toLowerCase() === 'true' || stock === '1';
@@ -32,7 +31,6 @@ export default function ProductDetails({
   image = '',
   variants = [],
 }: ProductDetailsProps) {
-  // 1. Нормалізація розмірів та варіантів
   const processedVariants = variants.map((v) => {
     const rawSize = String(v.size ?? '').trim();
     const cleanSize = rawSize.includes('(') ? rawSize.split('(')[0]?.trim() ?? rawSize : rawSize;
@@ -47,7 +45,6 @@ export default function ProductDetails({
     displaySize: hasDuplicateCleanSizes ? v.rawSize : v.cleanSize,
   }));
 
-  // 2. Стейт вибору розміру, кількості та статусу додавання
   const firstAvailable = validVariants.find((v) => v.isAvailable);
   const [selectedVariantId, setSelectedVariantId] = useState<string>(
     firstAvailable ? firstAvailable.id : validVariants[0]?.id || ''
@@ -58,7 +55,6 @@ export default function ProductDetails({
   const selectedVariant = validVariants.find((v) => v.id === selectedVariantId);
   const formattedPrice = new Intl.NumberFormat('uk-UA').format(price);
 
-  // 3. Логіка додавання товару в кошик (LocalStorage + Event)
   const handleAddToCart = () => {
     if (!selectedVariant || !selectedVariant.isAvailable) return;
 
@@ -84,8 +80,6 @@ export default function ProductDetails({
       }
 
       localStorage.setItem('barylux_cart', JSON.stringify(existingCart));
-
-      // Сповіщаємо Header про оновлення кількості товарів у кошику
       window.dispatchEvent(new Event('cart_updated'));
 
       setIsAdded(true);
@@ -96,32 +90,41 @@ export default function ProductDetails({
   };
 
   return (
-    <div className="flex flex-col gap-6">
-      {/* Назва та ціна */}
-      <div>
-        <h1 className="text-2xl font-black text-white sm:text-3xl">{name}</h1>
-        <div className="mt-3 flex items-baseline gap-2">
-          <span className="text-3xl font-black text-white">{formattedPrice}</span>
-          <span className="text-base font-bold text-orange-500">грн</span>
+    /* Sticky контейнер для UX: Панель залишається у фокусі при скролі галереї */
+    <div className="sticky top-24 flex flex-col justify-between gap-8 text-white">
+      
+      {/* 1. Заголовок + Ціна + Арт-номер (Захищений блоковий UX) */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between text-[10px] font-mono uppercase tracking-[0.2em] text-zinc-500">
+          <span>Артикул: #{groupId.slice(-6)}</span>
+          <span>В наявності</span>
+        </div>
+        
+        <h1 className="text-3xl font-black uppercase tracking-tight sm:text-4xl lg:text-5xl">
+          {name}
+        </h1>
+
+        <div className="flex items-baseline gap-2 pt-1">
+          <span className="text-3xl font-extrabold tracking-tight">{formattedPrice}</span>
+          <span className="font-mono text-xs uppercase text-zinc-500">UAH</span>
         </div>
       </div>
 
-      <div className="h-px w-full bg-[#262933]" />
+      <div className="h-px w-full bg-[#1C1E24]" />
 
-      {/* Обирач розміру */}
-      <div className="flex flex-col gap-3">
-        <div className="flex items-center justify-between">
-          <span className="text-xs font-bold uppercase tracking-wider text-zinc-400">
-            Оберіть розмір:
+      {/* 2. Вибір розміру (UX: Чистий мінімалізм, без зайвих підписів) */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between text-xs">
+          <span className="font-mono text-[11px] font-bold uppercase tracking-widest text-zinc-400">
+            Розмір
           </span>
-          {selectedVariant && (
-            <span className="text-xs font-semibold text-orange-500">
-              Вибрано: {selectedVariant.displaySize}
-            </span>
-          )}
+          <span className="text-[11px] font-medium text-zinc-500">
+            {selectedVariant ? `Обрано: ${selectedVariant.displaySize}` : 'Оберіть розмір'}
+          </span>
         </div>
 
-        <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+        {/* Геометрична сітка 4 в ряд з акцентною рамкою */}
+        <div className="grid grid-cols-4 gap-2">
           {validVariants.map((variant) => {
             const isSelected = selectedVariantId === variant.id;
 
@@ -131,83 +134,85 @@ export default function ProductDetails({
                 type="button"
                 disabled={!variant.isAvailable}
                 onClick={() => setSelectedVariantId(variant.id)}
-                className={`group relative flex flex-col items-center justify-center rounded-xl border p-3 text-center transition-all duration-200 ${
+                className={`relative flex h-12 items-center justify-center font-mono text-xs transition-all duration-200 ${
                   !variant.isAvailable
-                    ? 'cursor-not-allowed border-[#262933]/50 bg-[#0D0E12]/50 opacity-40 text-zinc-600'
+                    ? 'cursor-not-allowed border border-[#1C1E24]/40 bg-[#0A0A0C] text-zinc-700 line-through'
                     : isSelected
-                      ? 'border-orange-400 bg-orange-500 text-black shadow-[0_0_15px_rgba(249,115,22,0.35)] font-extrabold'
-                      : 'border-[#262933] bg-[#121319] text-zinc-300 hover:border-orange-500/50 hover:text-white'
+                      ? 'bg-white font-extrabold text-black ring-2 ring-white ring-offset-2 ring-offset-[#0A0A0C]'
+                      : 'border border-[#1C1E24] bg-[#0E0E11] font-bold text-zinc-300 hover:border-zinc-500 hover:text-white'
                 }`}
               >
-                <span className="text-xs font-extrabold uppercase">
-                  {variant.displaySize}
-                </span>
-
-                <span
-                  className={`mt-1 text-[9px] font-medium ${
-                    isSelected ? 'text-black/80 font-bold' : 'text-zinc-500 group-hover:text-zinc-300'
-                  }`}
-                >
-                  {variant.isAvailable ? 'В наявності' : 'Немає'}
-                </span>
+                {variant.displaySize}
               </button>
             );
           })}
         </div>
       </div>
 
-      {/* Лічильник кількості */}
-      <div className="flex items-center gap-4">
-        <span className="text-xs font-bold uppercase tracking-wider text-zinc-400">
-          Кількість:
-        </span>
-        <div className="inline-flex items-center gap-2 rounded-xl border border-[#262933] bg-[#121319] p-1">
+      {/* 3. Кількість + Додавання в кошик (Layout у 1 рядок на десктопі для економії місця) */}
+      <div className="flex flex-col gap-3 pt-2">
+        <div className="flex gap-3">
+          
+          {/* Стріп-степер кількості */}
+          <div className="flex h-14 items-center rounded-none border border-[#1C1E24] bg-[#0E0E11] px-2">
+            <button
+              type="button"
+              onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+              className="flex h-10 w-8 items-center justify-center font-mono text-zinc-400 hover:text-white"
+            >
+              −
+            </button>
+            <span className="w-8 text-center font-mono text-xs font-bold">
+              {quantity}
+            </span>
+            <button
+              type="button"
+              onClick={() => setQuantity((q) => q + 1)}
+              className="flex h-10 w-8 items-center justify-center font-mono text-zinc-400 hover:text-white"
+            >
+              +
+            </button>
+          </div>
+
+          {/* Головна CTA кнопка */}
           <button
             type="button"
-            onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-zinc-300 transition hover:bg-white/5 hover:text-white"
+            disabled={!selectedVariant?.isAvailable}
+            onClick={handleAddToCart}
+            className={`flex h-14 flex-1 items-center justify-center text-xs font-extrabold uppercase tracking-[0.2em] transition-all duration-300 ${
+              !selectedVariant?.isAvailable
+                ? 'cursor-not-allowed border border-[#1C1E24] bg-[#0E0E11] text-zinc-600'
+                : isAdded
+                  ? 'bg-emerald-500 text-black'
+                  : 'bg-white text-black hover:bg-zinc-200 active:scale-[0.98]'
+            }`}
           >
-            −
-          </button>
-          <span className="min-w-8 text-center text-sm font-bold text-white">
-            {quantity}
-          </span>
-          <button
-            type="button"
-            onClick={() => setQuantity((q) => q + 1)}
-            className="flex h-8 w-8 items-center justify-center rounded-lg text-zinc-300 transition hover:bg-white/5 hover:text-white"
-          >
-            +
+            {isAdded ? '✓ Додано' : 'В кошик'}
           </button>
         </div>
-      </div>
-
-      {/* Кнопки дій */}
-      <div className="flex flex-col gap-3 pt-2">
-        <button
-          type="button"
-          disabled={!selectedVariant?.isAvailable}
-          onClick={handleAddToCart}
-          className={`flex w-full items-center justify-center gap-3 rounded-2xl py-4 text-xs font-black uppercase tracking-widest transition-all duration-300 ${
-            !selectedVariant?.isAvailable
-              ? 'cursor-not-allowed border border-[#262933] bg-[#121319] text-zinc-600'
-              : isAdded
-                ? 'bg-emerald-500 text-black shadow-[0_4px_25px_rgba(16,185,129,0.35)]'
-                : 'bg-orange-500 text-black hover:bg-orange-400 shadow-[0_4px_25px_rgba(249,115,22,0.3)]'
-          }`}
-        >
-          {isAdded ? '✓ Додано у кошик!' : 'Додати в кошик 🛒'}
-        </button>
 
         {isAdded && (
           <Link
             href="/cart"
-            className="flex w-full items-center justify-center rounded-2xl border border-orange-500/40 bg-orange-500/10 py-3 text-xs font-bold uppercase text-orange-400 transition hover:bg-orange-500/20"
+            className="flex h-12 items-center justify-center border border-[#1C1E24] bg-[#0E0E11] text-xs font-bold uppercase tracking-wider text-zinc-300 transition hover:border-white hover:text-white"
           >
-            Перейти до оформлення →
+            Оформити замовлення →
           </Link>
         )}
       </div>
+
+      {/* 4. Аккордеон з інформацією про доставку (Додає ваги та довіри бренду) */}
+      <div className="border-t border-[#1C1E24] pt-4 text-xs text-zinc-400 space-y-2">
+        <div className="flex justify-between py-1">
+          <span className="font-semibold text-zinc-300">Доставка:</span>
+          <span>Нова Пошта (1-2 дні)</span>
+        </div>
+        <div className="flex justify-between py-1">
+          <span className="font-semibold text-zinc-300">Оплата:</span>
+          <span>При отриманні / Карткою</span>
+        </div>
+      </div>
+
     </div>
   );
 }

@@ -46,7 +46,7 @@ export const fetchingProducts = cache(async (): Promise<GroupedProduct[]> => {
       return [];
     }
 
-    const url = `https://backend.mydrop.com.ua/vendor/api/export/products/prom/yml?public_api_key=${token}&price_field=drop_price&increase_price_type=absolute&increase_price_value=299&param_name=Размер&stock_sync=true&only_available=true`;
+    const url = `https://backend.mydrop.com.ua/dropshipper/api/export/products?hash=${token}`;
 
     const response = await fetch(url, { next: { revalidate: 300 } });
 

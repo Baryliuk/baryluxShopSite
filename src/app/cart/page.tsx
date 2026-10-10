@@ -23,18 +23,17 @@ const formatPrice = (value: number) =>
 export default function CartPage() {
   const [items, setItems] = useState<CartItem[]>([]);
   const [isMounted, setIsMounted] = useState(false);
+  
+  // State для промокоду
   const [promoCode, setPromoCode] = useState("");
   const [discount, setDiscount] = useState(0);
+  const [promoStatus, setPromoStatus] = useState<{ type: "success" | "error"; msg: string } | null>(null);
 
-  // 1. Безпечне зчитування кошика з localStorage після маунту компонента
+  // 1. Зчитання з localStorage
   const loadCart = () => {
     try {
       const savedCart = localStorage.getItem("barylux_cart");
-      if (savedCart) {
-        setItems(JSON.parse(savedCart));
-      } else {
-        setItems([]);
-      }
+      setItems(savedCart ? JSON.parse(savedCart) : []);
     } catch (e) {
       console.error("Помилка зчитування кошика з localStorage:", e);
     }
@@ -44,14 +43,13 @@ export default function CartPage() {
     setIsMounted(true);
     loadCart();
 
-    // Слухаємо оновлення кошика з інших компонентів
     window.addEventListener("cart_updated", loadCart);
     return () => {
       window.removeEventListener("cart_updated", loadCart);
     };
   }, []);
 
-  // 2. Збереження оновленого стейту в localStorage та відправка івенту для Header
+  // 2. Мутація стейту та синхронізація
   const saveCart = (newItems: CartItem[]) => {
     setItems(newItems);
     try {
@@ -82,26 +80,29 @@ export default function CartPage() {
   };
 
   const handleApplyPromo = () => {
+    setPromoStatus(null);
+    if (!promoCode.trim()) return;
+
     if (promoCode.trim().toUpperCase() === "BARYLUX10") {
-      setDiscount(0.1); // 10% знижки
+      setDiscount(0.1);
+      setPromoStatus({ type: "success", msg: "Промокод застосовано (-10%)" });
     } else {
-      alert("Недійсний промокод");
+      setDiscount(0);
+      setPromoStatus({ type: "error", msg: "Недійсний промокод" });
     }
   };
 
+  // Розрахунок підсумку
   const rawSubtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const discountAmount = rawSubtotal * discount;
   const subtotal = rawSubtotal - discountAmount;
-  const shipping = subtotal > 6000 || items.length === 0 ? 0 : 199;
-  const total = subtotal + shipping;
 
-  // Під час SSR/SSG чекаємо маунту, щоб уникнути Hydration Mismatch
   if (!isMounted) {
     return (
-      <div className="relative flex min-h-screen flex-col justify-between bg-[#0D0E12] text-zinc-100">
+      <div className="relative flex min-h-screen flex-col justify-between bg-[#0A0A0C] text-zinc-100">
         <Header />
         <main className="flex min-h-[calc(100vh-69px)] w-full items-center justify-center px-4 py-8">
-          <div className="h-8 w-8 animate-spin rounded-full border-2 border-orange-500 border-t-transparent" />
+          <div className="h-6 w-6 animate-spin rounded-full border-2 border-white border-t-transparent" />
         </main>
         <Footer />
       </div>
@@ -109,110 +110,120 @@ export default function CartPage() {
   }
 
   return (
-    <div className="relative flex min-h-screen flex-col justify-between bg-[#0D0E12] text-zinc-100 selection:bg-orange-500 selection:text-black">
+    <div className="relative flex min-h-screen flex-col justify-between bg-[#0A0A0C] text-zinc-100 selection:bg-white selection:text-black">
       <Header />
 
       <main className="flex min-h-[calc(100vh-69px)] w-full items-start justify-center px-4 py-8 sm:px-6 lg:px-8">
-        <div className="w-full max-w-7xl">
-          <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div className="w-full max-w-6xl">
+          {/* Header section */}
+          <div className="mb-8 flex flex-col gap-4 border-b border-[#1C1E24] pb-6 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <p className="mb-2 text-sm uppercase tracking-[0.25em] text-orange-400">Кошик</p>
-              <h1 className="text-3xl font-black tracking-tight text-white sm:text-4xl">
-                Ваші товари
+              <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-zinc-500">
+                [ CART SUMMARY ]
+              </span>
+              <h1 className="mt-1 text-2xl font-black uppercase tracking-tight text-white sm:text-3xl">
+                Ваш кошик ({items.reduce((acc, i) => acc + i.quantity, 0)})
               </h1>
             </div>
             <Link
               href="/products"
-              className="inline-flex items-center justify-center rounded-full border border-white/15 bg-white/5 px-4 py-2 text-sm font-medium text-zinc-200 transition hover:border-orange-400/70 hover:text-white"
+              className="inline-flex items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900/50 px-4 py-2.5 font-mono text-xs font-bold uppercase tracking-wider text-zinc-300 transition hover:border-zinc-500 hover:text-white"
             >
-              Продовжити покупки
+              ← До каталогу
             </Link>
           </div>
 
           {items.length === 0 ? (
-            <div className="flex min-h-[300px] flex-col items-center justify-center rounded-3xl border border-dashed border-white/10 bg-white/[0.02] p-8 text-center">
-              <p className="text-lg font-medium text-zinc-400">Твій кошик порожній 🛒</p>
+            <div className="flex min-h-[320px] flex-col items-center justify-center rounded-2xl border border-dashed border-[#1C1E24] bg-[#0E0E11] p-8 text-center">
+              <span className="font-mono text-xs uppercase tracking-wider text-zinc-500">
+                Кошик порожній
+              </span>
+              <p className="mt-2 text-sm text-zinc-400 font-light">
+                Ви ще не додали жодного товару до вашого вибору.
+              </p>
               <Link
                 href="/products"
-                className="mt-4 rounded-xl bg-orange-500 px-6 py-2.5 text-sm font-semibold text-black hover:bg-orange-400"
+                className="mt-6 rounded-xl bg-white px-6 py-3 font-mono text-xs font-bold uppercase tracking-wider text-black transition hover:bg-zinc-200 active:scale-95"
               >
-                Перейти до каталогу
+                Переглянути колекцію
               </Link>
             </div>
           ) : (
-            <div className="grid gap-6 lg:grid-cols-[1.7fr_0.9fr]">
-              <section className="space-y-4">
+            <div className="grid gap-8 lg:grid-cols-[1.8fr_1fr]">
+              {/* Items List */}
+              <section className="space-y-3">
                 {items.map((item) => (
                   <article
                     key={item.id}
-                    className="group relative overflow-hidden rounded-[28px] border border-white/10 bg-white/[0.03] p-4 shadow-[0_20px_50px_rgba(0,0,0,0.25)] backdrop-blur-sm sm:p-5"
+                    className="group relative overflow-hidden rounded-2xl border border-[#1C1E24] bg-[#0E0E11] p-4 transition hover:border-zinc-700"
                   >
-                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-                      {/* Зображення товару */}
-                      <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-2xl border border-white/10 bg-[#1A1C23]">
+                    <div className="flex gap-4">
+                      {/* Image */}
+                      <div className="relative h-24 w-20 shrink-0 overflow-hidden rounded-xl border border-zinc-800 bg-[#121318]">
                         {item.image ? (
                           <Image
                             src={item.image}
                             alt={item.name}
                             fill
-                            sizes="96px"
+                            sizes="80px"
                             className="object-cover object-center"
                           />
                         ) : (
-                          <div className="flex h-full w-full items-center justify-center text-xs text-zinc-600">
-                            Немає фото
+                          <div className="flex h-full w-full items-center justify-center font-mono text-[10px] uppercase text-zinc-600">
+                            N/A
                           </div>
                         )}
                       </div>
 
-                      <div className="flex-1">
-                        <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+                      {/* Info & Controls */}
+                      <div className="flex flex-1 flex-col justify-between">
+                        <div className="flex items-start justify-between gap-2">
                           <div>
                             <Link
                               href={`/products/${item.groupId}`}
-                              className="text-lg font-bold text-white transition hover:text-orange-400"
+                              className="text-sm font-bold uppercase tracking-wide text-white transition hover:text-zinc-400"
                             >
                               {item.name}
                             </Link>
-                            <p className="mt-0.5 text-xs text-zinc-400">
-                              Розмір: <span className="font-semibold text-zinc-200">{item.size}</span>
+                            <p className="mt-0.5 font-mono text-xs text-zinc-500">
+                              Розмір: <span className="text-zinc-200">{item.size}</span>
                             </p>
                           </div>
                           <button
                             type="button"
                             onClick={() => removeItem(item.id)}
-                            className="self-start text-xs font-medium text-red-400 hover:text-red-300 transition"
+                            className="font-mono text-[10px] uppercase tracking-wider text-zinc-500 hover:text-red-400 transition"
                           >
                             Видалити
                           </button>
                         </div>
 
-                        <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                          <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-black/30 p-1">
+                        <div className="flex items-end justify-between pt-2">
+                          {/* Counter */}
+                          <div className="inline-flex items-center rounded-lg border border-[#1C1E24] bg-[#121318]">
                             <button
                               type="button"
                               onClick={() => updateQuantity(item.id, -1)}
-                              className="flex h-7 w-7 items-center justify-center rounded-full text-zinc-300 transition hover:bg-white/10 hover:text-white"
+                              className="flex h-7 w-7 items-center justify-center font-mono text-xs text-zinc-400 transition hover:text-white"
                             >
                               −
                             </button>
-                            <span className="min-w-6 text-center text-sm font-semibold text-white">
+                            <span className="min-w-6 text-center font-mono text-xs font-bold text-white">
                               {item.quantity}
                             </span>
                             <button
                               type="button"
                               onClick={() => updateQuantity(item.id, 1)}
-                              className="flex h-7 w-7 items-center justify-center rounded-full text-zinc-300 transition hover:bg-white/10 hover:text-white"
+                              className="flex h-7 w-7 items-center justify-center font-mono text-xs text-zinc-400 transition hover:text-white"
                             >
                               +
                             </button>
                           </div>
 
-                          <div className="text-left sm:text-right">
-                            <span className="text-base font-black text-white">
-                              {formatPrice(item.price * item.quantity)} грн
-                            </span>
-                          </div>
+                          {/* Price */}
+                          <span className="font-mono text-sm font-bold text-white">
+                            {formatPrice(item.price * item.quantity)} грн
+                          </span>
                         </div>
                       </div>
                     </div>
@@ -220,13 +231,15 @@ export default function CartPage() {
                 ))}
               </section>
 
-              <aside className="h-fit rounded-[28px] border border-orange-400/20 bg-gradient-to-b from-white/[0.04] to-white/[0.02] p-5 shadow-[0_20px_80px_rgba(0,0,0,0.35)] backdrop-blur-sm">
-                <h3 className="text-xl font-bold text-white border-b border-white/10 pb-4">
-                  Підсумок
-                </h3>
+              {/* Order Summary Sidebar */}
+              <aside className="h-fit rounded-2xl border border-[#1C1E24] bg-[#0E0E11] p-6">
+                <h2 className="border-b border-[#1C1E24] pb-3 text-xs font-bold uppercase tracking-wider text-white">
+                  Підсумок замовлення
+                </h2>
 
-                <div className="mt-5 rounded-2xl border border-white/10 bg-black/20 p-3">
-                  <label className="mb-2 block text-xs uppercase tracking-[0.2em] text-zinc-400">
+                {/* Promo Code Form */}
+                <div className="mt-4">
+                  <label className="block font-mono text-[10px] uppercase text-zinc-500 mb-1.5">
                     Промокод
                   </label>
                   <div className="flex gap-2">
@@ -235,41 +248,59 @@ export default function CartPage() {
                       value={promoCode}
                       onChange={(e) => setPromoCode(e.target.value)}
                       placeholder="BARYLUX10"
-                      className="w-full rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm text-white outline-none focus:border-orange-500/50"
+                      className="w-full rounded-xl border border-[#1C1E24] bg-[#121318] px-3 py-2 font-mono text-xs text-white placeholder-zinc-600 outline-none focus:border-zinc-500 uppercase"
                     />
                     <button
                       type="button"
                       onClick={handleApplyPromo}
-                      className="rounded-full bg-orange-500 px-4 py-2 text-sm font-semibold text-black transition hover:bg-orange-400"
+                      className="rounded-xl border border-zinc-700 bg-zinc-800 px-4 py-2 font-mono text-xs font-bold uppercase tracking-wider text-white transition hover:bg-zinc-700 active:scale-95"
                     >
                       OK
                     </button>
                   </div>
+                  {promoStatus && (
+                    <p
+                      className={`mt-2 font-mono text-[10px] ${
+                        promoStatus.type === "success" ? "text-emerald-400" : "text-red-400"
+                      }`}
+                    >
+                      {promoStatus.msg}
+                    </p>
+                  )}
                 </div>
 
-                <div className="mt-5 space-y-3 text-sm text-zinc-300">
-                  <div className="flex items-center justify-between">
-                    <span>Підсумок</span>
-                    <span>{formatPrice(subtotal)} грн</span>
+                {/* Calculation breakdown */}
+                <div className="mt-6 space-y-3 font-mono text-xs text-zinc-400 border-t border-[#1C1E24] pt-4">
+                  <div className="flex justify-between">
+                    <span>Товари ({items.reduce((acc, i) => acc + i.quantity, 0)})</span>
+                    <span>{formatPrice(rawSubtotal)} грн</span>
                   </div>
-                  <div className="flex items-center justify-between">
+
+                  {discount > 0 && (
+                    <div className="flex justify-between text-emerald-400">
+                      <span>Знижка ({(discount * 100).toFixed(0)}%)</span>
+                      <span>-{formatPrice(discountAmount)} грн</span>
+                    </div>
+                  )}
+
+                  <div className="flex justify-between">
                     <span>Доставка</span>
-                    <span className=" font-semibold">
-                     За тарифами Нової Пошти
-                    </span>
+                    <span className="text-zinc-500">За тарифами НП</span>
                   </div>
-                  <div className="flex items-center justify-between border-t border-white/10 pt-3 text-base font-semibold text-white">
-                    <span>Разом</span>
-                    <span className="text-lg font-black text-orange-400">{formatPrice(total)} грн</span>
+
+                  <div className="flex justify-between border-t border-[#1C1E24] pt-3 text-sm font-bold text-white">
+                    <span className="uppercase">Разом</span>
+                    <span className="font-mono">{formatPrice(subtotal)} грн</span>
                   </div>
                 </div>
 
-                <button
-                  type="button"
-                  className="mt-6 w-full rounded-full bg-gradient-to-r from-orange-500 via-amber-400 to-yellow-300 px-5 py-3 text-base font-black text-black shadow-[0_20px_40px_rgba(251,146,60,0.4)] transition hover:brightness-110 active:scale-[0.98]"
+                {/* Checkout CTA */}
+                <Link
+                  href="/checkout"
+                  className="mt-6 flex w-full items-center justify-center rounded-xl bg-white py-3 font-mono text-xs font-bold uppercase tracking-wider text-black transition hover:bg-zinc-200 active:scale-95"
                 >
                   Оформити замовлення
-                </button>
+                </Link>
               </aside>
             </div>
           )}

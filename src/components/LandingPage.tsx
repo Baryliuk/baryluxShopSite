@@ -3,41 +3,79 @@ import Link from "next/link";
 
 export default function Landing() {
   return (
-    <main className="relative flex min-h-[calc(100vh-69px)] flex-col items-center justify-center overflow-hidden bg-[#0D0E12] px-4 select-none">
-      <Image
-        src="/bh.jpg" 
-        alt="Barylux background"
-        fill
-        priority
-        sizes="100vw"
-        className="object-cover object-center opacity-25 grayscale pointer-events-none"
-      />
+    <main className="relative flex h-[calc(100vh-65px)] min-h-[620px] w-full flex-col justify-end overflow-hidden bg-[#0A0A0C] select-none">
+      {/* 1. Фоновий лукбук */}
+      <div className="absolute inset-0 z-0">
+        <Image
+          src="/bh.jpg"
+          alt="Barylux Collection"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-center opacity-40 grayscale transition-transform duration-1000 hover:scale-105"
+        />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0A0A0C] via-[#0A0A0C]/30 to-[#0A0A0C]/80" />
+      </div>
 
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0D0E12] via-transparent to-[#0D0E12]" />
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-[#0D0E12] via-transparent to-[#0D0E12]" />
+      {/* 2. Контентний блок */}
+      <div className="relative z-10 mx-auto w-full max-w-7xl px-4 pb-12 sm:px-6 lg:px-8">
+        <div className="max-w-2xl">
+          {/* Лейбл дропу */}
+          <div className="mb-4 inline-flex items-center gap-2 border border-zinc-800 bg-black/50 px-3 py-1.5 backdrop-blur-md">
+            <span className="h-1.5 w-1.5 rounded-full bg-white animate-pulse" />
+            <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-zinc-300">
+              New Drop // 2026 Collection
+            </span>
+          </div>
 
-      <div className="relative z-10 flex max-w-5xl flex-col items-center text-center">
-        <h1 className="text-5xl font-black uppercase tracking-tight text-white sm:text-7xl md:text-7xl lg:text-8xl drop-shadow-[0_0_35px_rgba(249,115,22,0.12)]">
-          Обери свій — <span className="text-orange-500 drop-shadow-[0_0_35px_rgba(249,115,22,0.45)]">стиль</span>
-        </h1>
+          {/* Акцентний заголовок */}
+          <h1 className="text-4xl font-black uppercase tracking-tight text-white leading-[0.95] sm:text-6xl lg:text-7xl">
+            URBAN <br />
+            ESSENTIALS
+          </h1>
 
-        <p className="mt-3 mb-6 max-w-2xl text-xs font-medium uppercase tracking-[0.25em] text-zinc-400 sm:text-sm">
-          <span className="mx-1 text-orange-500/80">•</span> Відправка в день замовлення <span className="mx-1 text-orange-500/80">•</span> <br/>
-          <span className="mx-1 text-orange-500/80">•</span> Накладний платіж <span className="mx-1 text-orange-500/80">•</span>
-        </p>
+          <p className="mt-4 max-w-md text-xs font-light text-zinc-400 sm:text-sm leading-relaxed">
+            Преміальні матеріали, бездоганна посадка та продуманий до дрібниць крой. Одяг, який тримає форму та вирізняє з натовпу.
+          </p>
 
-        {/* Прямий стилізований Link замість nested button */}
-        <Link 
-          href="/products"
-          className="group relative inline-flex items-center justify-center overflow-hidden rounded-full border border-orange-500/80 bg-orange-500 px-10 py-3.5 text-xs font-extrabold uppercase tracking-widest text-black transition-all duration-300 hover:border-orange-400 hover:bg-orange-400 hover:shadow-[0_0_30px_rgba(249,115,22,0.45)]"
-        >
-          <span
-            className="pointer-events-none absolute left-1/2 top-1/2 aspect-square w-full -translate-x-1/2 -translate-y-1/2 scale-0 rounded-full bg-white/25 transition-transform duration-500 ease-out group-hover:scale-[2.5]"
-          />
-          <span className="relative z-10">
-            Переглянути наявність
-          </span>
-        </Link>
+          {/* Кнопки дій */}
+          <div className="mt-8 flex flex-wrap items-center gap-4">
+            <Link
+              href="/products"
+              className="group relative inline-flex items-center justify-center bg-white px-8 py-4 text-xs font-extrabold uppercase tracking-widest text-black transition-all hover:bg-zinc-200 active:scale-95"
+            >
+              <span>Переглянути каталог</span>
+            </Link>
+
+            {/* Якірне посилання на блок з новинками */}
+            <a
+              href="#new-arrivals"
+              className="inline-flex items-center justify-center border border-zinc-800 bg-black/40 px-8 py-4 text-xs font-bold uppercase tracking-widest text-white backdrop-blur-sm transition-all hover:border-zinc-500 hover:bg-black/80 active:scale-95"
+            >
+              Новинки
+            </a>
+          </div>
+        </div>
+
+        {/* 3. Нижнє інформаційне табло */}
+        <div className="mt-12 grid grid-cols-2 gap-4 border-t border-zinc-800/80 pt-6 md:grid-cols-4">
+          <div>
+            <p className="font-mono text-[10px] uppercase text-zinc-500">Доставка</p>
+            <p className="mt-1 text-xs font-semibold text-zinc-300">Відправка в день замовлення</p>
+          </div>
+          <div>
+            <p className="font-mono text-[10px] uppercase text-zinc-500">Оплата</p>
+            <p className="mt-1 text-xs font-semibold text-zinc-300">Накладний платіж / Карта</p>
+          </div>
+          <div>
+            <p className="font-mono text-[10px] uppercase text-zinc-500">Якість</p>
+            <p className="mt-1 text-xs font-semibold text-zinc-300">Відбірні тканини та фурнітура</p>
+          </div>
+          <div>
+            <p className="font-mono text-[10px] uppercase text-zinc-500">Сервіс</p>
+            <p className="mt-1 text-xs font-semibold text-zinc-300">Легкий обмін та повернення</p>
+          </div>
+        </div>
       </div>
     </main>
   );

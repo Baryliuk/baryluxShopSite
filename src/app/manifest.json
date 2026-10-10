@@ -1,0 +1,16 @@
+{
+  "name": "BARYLUX",
+  "short_name": "BARYLUX",
+  "description": "BARYLUX — Premium Apparel Store",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0A0A0C",
+  "theme_color": "#0A0A0C",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

@@ -1,23 +1,8 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="100%" height="100%">
-  <style>
-    /* Фон за замовчуванням (для темної теми браузера) */
-    .bg { fill: #0D0E12; rx: 8px; }
-    .bracket { fill: #F97316; font-weight: 900; }
-    .text { fill: #FFFFFF; font-weight: 900; font-family: system-ui, -apple-system, sans-serif; }
-
-    /* Якщо у користувача світла тема ОС/браузера */
-    @media (prefers-color-scheme: light) {
-      .bg { fill: #18181B; } /* залишаємо темний кастомний квадрат, щоб біла літера 'B' була виразною */
-    }
-  </style>
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Фон -->
+  <rect width="512" height="512" rx="112" fill="#0A0A0C"/>
+  <rect x="2" y="2" width="508" height="508" rx="110" stroke="#1C1E24" stroke-width="4"/>
   
-  <!-- Темна заокруглена підкладка -->
-  <rect class="bg" width="32" height="32" />
-
-  <!-- Текст логотипу [B] -->
-  <text x="16" y="22" text-anchor="middle" font-size="20">
-    <tspan class="bracket">[</tspan>
-    <tspan class="text">B</tspan>
-    <tspan class="bracket">]</tspan>
-  </text>
+  <!-- Геометрична монограма 'B' -->
+  <path d="M160 128H288C332.183 128 368 163.817 368 208C368 236.42 353.181 261.326 330.832 275.438C359.431 288.752 379.5 317.727 379.5 351.5C379.5 397.063 342.563 434 297 434H160V128ZM220 176V252H284C308.301 252 328 232.301 328 208C328 183.699 308.301 176 284 176H220ZM220 300V386H292C317.405 386 338 365.405 338 340C338 314.595 317.405 300 292 300H220Z" fill="#FFFFFF"/>
 </svg>

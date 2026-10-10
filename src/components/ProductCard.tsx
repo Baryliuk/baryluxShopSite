@@ -8,75 +8,64 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product, priority = false }: ProductCardProps) {
-  const formattedPrice = new Intl.NumberFormat('uk-UA').format(product.price);
+  // Безпечне форматування ціни від крашу
+  const formattedPrice = typeof product?.price === 'number' && !isNaN(product.price)
+    ? new Intl.NumberFormat('uk-UA').format(product.price)
+    : '0';
+
+  const href = product?.group_id ? `/products/${product.group_id}` : '#';
 
   return (
     <Link
-      href={`/products/${product.group_id}`}
-      className="group relative flex flex-col overflow-hidden rounded-2xl border border-[#262933] bg-[#121319] transition-all duration-300 hover:-translate-y-1 hover:border-orange-500/50 hover:shadow-[0_10px_30px_rgba(249,115,22,0.1)]"
+      href={href}
+      className="group block w-full text-left"
     >
-      {/* 1. КОНТЕЙНЕР ДЛЯ ЗОБРАЖЕННЯ */}
-      <div className="relative aspect-[4/5] w-full overflow-hidden bg-[#1A1C23]">
-        {product.image ? (
+      {/* 1. ФОТО ТОВАРУ (Співвідношення 4:5, чисті кути, м'який ховер) */}
+      <div className="relative aspect-[4/5] w-full overflow-hidden rounded-xl bg-[#0E0E11] border border-[#1C1E24]/60 transition-colors duration-300 group-hover:border-[#333]">
+        {product?.image ? (
           <Image
             src={product.image}
-            alt={product.name}
+            alt={product.name || 'Товар'}
             fill
             priority={priority}
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
             className="object-cover object-center transition-transform duration-500 ease-out group-hover:scale-105"
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center text-xs text-zinc-600">
-            Немає фото
+          <div className="flex h-full w-full items-center justify-center text-xs font-medium text-zinc-600">
+            НЕМАЄ ФОТО
           </div>
         )}
 
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-
-        {/* 2. РОЗМІРИ: Hover Overlay */}
-        {product.availableSizes && product.availableSizes.length > 0 && (
-          <div className="absolute bottom-0 left-0 right-0 translate-y-full p-3 transition-transform duration-300 ease-out group-hover:translate-y-0">
-            <p className="mb-1.5 text-[10px] font-bold uppercase tracking-wider text-zinc-400">
-              Доступні розміри:
-            </p>
-            <div className="flex flex-wrap gap-1">
-              {product.availableSizes.slice(0, 5).map((size) => (
-                <span
-                  key={size}
-                  className="rounded-md border border-white/10 bg-black/60 px-2 py-0.5 text-[10px] font-extrabold uppercase text-white backdrop-blur-md"
-                >
-                  {size}
-                </span>
-              ))}
-              {product.availableSizes.length > 5 && (
-                <span className="rounded-md bg-orange-500/90 px-1.5 py-0.5 text-[10px] font-extrabold text-black backdrop-blur-md">
-                  +{product.availableSizes.length - 5}
-                </span>
-              )}
-            </div>
+        {/* 2. РОЗМІРИ: М'який чистий оверлей у кутку при ховері */}
+        {product?.availableSizes && product.availableSizes.length > 0 && (
+          <div className="absolute bottom-2 left-2 right-2 flex flex-wrap gap-1 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+            {product.availableSizes.slice(0, 4).map((size) => (
+              <span
+                key={size}
+                className="rounded border border-white/20 bg-black/70 px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wider text-white backdrop-blur-md"
+              >
+                {size}
+              </span>
+            ))}
+            {product.availableSizes.length > 4 && (
+              <span className="rounded border border-white/20 bg-black/70 px-1.5 py-0.5 text-[9px] font-bold text-zinc-300 backdrop-blur-md">
+                +{product.availableSizes.length - 4}
+              </span>
+            )}
           </div>
         )}
       </div>
 
-      {/* 3. ІНФОРМАЦІЙНИЙ БЛОК */}
-      <div className="flex flex-1 flex-col justify-between p-4">
-        <div>
-          <h3 className="line-clamp-2 text-xs font-bold text-zinc-200 transition-colors group-hover:text-white">
-            {product.name}
-          </h3>
-        </div>
+      {/* 3. ТЕКСТОВИЙ БЛОК (Мінімалізм без рамок) */}
+      <div className="mt-2.5 px-0.5">
+        <h3 className="line-clamp-1 text-xs font-medium tracking-tight text-zinc-200 transition-colors group-hover:text-white">
+          {product?.name || 'Без назви'}
+        </h3>
 
-        <div className="mt-3 flex items-center justify-between border-t border-[#262933] pt-3">
-          <div className="flex flex-col">
-            <span className="text-[10px] uppercase tracking-wider text-zinc-500">Ціна</span>
-            <span className="text-sm font-black text-white">
-              {formattedPrice} <span className="text-[11px] font-bold text-orange-500">грн</span>
-            </span>
-          </div>
-
-          <span className="flex h-8 w-8 items-center justify-center rounded-xl border border-[#262933] bg-[#1A1C23] text-zinc-400 transition-all duration-300 group-hover:border-orange-500 group-hover:bg-orange-500 group-hover:text-black">
-            →
+        <div className="mt-1 flex items-center justify-between">
+          <span className="text-sm font-extrabold tracking-tight text-white">
+            {formattedPrice} ₴
           </span>
         </div>
       </div>
