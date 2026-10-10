@@ -1,5 +1,5 @@
 "server-only";
-"use server"; 
+"use server";
 
 import { auth } from "@/auth";
 import { connectToDB } from "@/lib/mongodb";
@@ -39,7 +39,6 @@ export async function createOrderAction(data: CreateOrderInput) {
     await connectToDB();
 
     const session = await auth();
-    const userEmail = session?.user?.email || data.customer.email;
 
     // Розрахунок цін на сервері (запобігає маніпуляціям із localStorage)
     const rawSubtotal = data.items.reduce(
