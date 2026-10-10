@@ -1,98 +1,109 @@
-import { Suspense } from 'react';
-import ProductGrid from '@/components/ProductGrid';
-import FiltersSidebar from '@/components/FiltersSidebar';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
-import SearchBar from '@/components/SearchBar';
-import { fetchingProducts } from '@/services/mydrop';
-import { extractUniqueSizes } from '@/utils/sizes';
-import { extractUniqueCategories } from '@/utils/categories';
+import { fetchingProducts, normalizeCategoryName } from "@/services/mydrop";
+import FiltersSidebar from "@/components/FiltersSidebar";
+import ProductGrid from "@/components/ProductGrid";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
-interface PageProps {
+interface ProductsPageProps {
   searchParams: Promise<{
-    query?: string;
-    size?: string;
     category?: string;
+    size?: string;
+    query?: string;
     limit?: string;
   }>;
 }
 
-export default async function ProductsPage({ searchParams }: PageProps) {
+export default async function ProductsPage({ searchParams }: ProductsPageProps) {
   const resolvedParams = await searchParams;
+  const currentCategory = resolvedParams.category;
+  const currentSize = resolvedParams.size;
+  const searchQuery = resolvedParams.query;
+  const limit = resolvedParams.limit;
 
   const allProducts = await fetchingProducts();
-  const availableSizes = extractUniqueSizes(allProducts);
-  const availableCategories = extractUniqueCategories(allProducts);
+
+  // 1. Формуємо унікальні категорії для сайдбару без дублів
+  const categoryMap = new Map<string, { id: string; name: string }>();
+  allProducts.forEach((p) => {
+    // Якщо у товарів збереглася категорія як ID або як назва, обробляємо безпечно
+    const rawName = p.category_name || "Інше";
+    const name = normalizeCategoryName ? normalizeCategoryName(rawName) : rawName;
+    
+    // Використовуємо category_id або slug назви як ключ
+    const id = String(p.category_id || name.toLowerCase());
+    
+    if (!categoryMap.has(id)) {
+      categoryMap.set(id, { id, name });
+    }
+  });
+  const categories = Array.from(categoryMap.values());
+
+  // 2. Фільтруємо товари за категорією для отримання контекстних розмірів
+  let targetProducts = allProducts;
+  if (currentCategory && currentCategory !== "all") {
+    targetProducts = allProducts.filter((p) => {
+      const mainCatMatch = String(p.category_id) === String(currentCategory);
+      const subCatMatch = Array.isArray(p.category_ids) && p.category_ids.map(String).includes(String(currentCategory));
+      const nameMatch = p.category_name?.toLowerCase() === currentCategory.toLowerCase();
+      return mainCatMatch || subCatMatch || nameMatch;
+    });
+  }
+
+  // 3. Збираємо контекстні розміри ТІЛЬКИ для обраної категорії (з захистом від не-строкових значень)
+  const sizesSet = new Set<string>();
+  targetProducts.forEach((p) => {
+    p.variants?.forEach((v) => {
+      if (v.stock && v.size !== undefined && v.size !== null) {
+        const s = String(v.size).trim().toUpperCase();
+        const cleanSize = s.includes('(') ? s.split('(')[0]?.trim() || s : s;
+        if (cleanSize) sizesSet.add(cleanSize);
+      }
+    });
+  });
+  const sizes = Array.from(sizesSet).sort();
+
+  // Знаходимо гарну назву категорії для заголовка сторінки
+  let displayCategoryName = "Усі товари";
+  if (currentCategory) {
+    const foundCat = categories.find((c) => c.id === currentCategory || c.name.toLowerCase() === currentCategory.toLowerCase());
+    if (foundCat) displayCategoryName = foundCat.name;
+    else displayCategoryName = currentCategory;
+  }
 
   return (
-    <div className="flex min-h-screen flex-col justify-between bg-[#0A0A0C] text-zinc-100 selection:bg-white selection:text-black">
-      <div>
-        <Header />
+    <div className="flex min-h-screen flex-col justify-between bg-[#0A0A0C] text-zinc-100">
+      <Header />
 
-        <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-          
-          {/* Верхня консоль: Заголовок + Пошук у 1 рядок на десктопі */}
-          <div className="mb-10 flex flex-col justify-between gap-6 border-b border-[#1C1E24] pb-8 md:flex-row md:items-end">
-            <div>
-              <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-zinc-500">
-                Колекція 2026
-              </span>
-              <h1 className="mt-1 text-3xl font-black uppercase tracking-tight sm:text-4xl">
-                Каталог
-              </h1>
-            </div>
+      <main className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+        <div className="mb-8 border-b border-[#1C1E24] pb-4">
+          <span className="font-mono text-[10px] uppercase tracking-[0.25em] text-zinc-500">
+            [ CATALOG ]
+          </span>
+          <h1 className="mt-1 text-2xl font-black uppercase text-white">
+            {displayCategoryName}
+          </h1>
+        </div>
 
-            <div className="w-full md:w-80">
-              <Suspense
-                fallback={
-                  <div className="h-11 w-full animate-pulse rounded-xl border border-[#1C1E24] bg-[#0E0E11]" />
-                }
-              >
-                <SearchBar />
-              </Suspense>
-            </div>
-          </div>
+        <div className="grid gap-8 lg:grid-cols-[240px_1fr]">
+          {/* Сайдбар фільтрів отримує тільки чисті категорії та контекстні розміри */}
+          <FiltersSidebar
+            categories={categories}
+            sizes={sizes}
+            currentCategory={currentCategory}
+            currentSize={currentSize}
+          />
 
-          {/* Архітектура Лейауту: Sticky Sidebar (250px) + Main Grid */}
-          <div className="flex flex-col items-start gap-10 md:flex-row">
-            
-            {/* Sticky Сайдбар Фільтрів */}
-            <aside className="sticky top-28 w-full shrink-0 md:w-64">
-              <FiltersSidebar
-                sizes={availableSizes}
-                categories={availableCategories}
-                currentSize={resolvedParams.size}
-                currentCategory={resolvedParams.category}
-              />
-            </aside>
-
-            {/* Основна сітка каталогу */}
-            <section className="w-full min-w-0 flex-1">
-              <Suspense
-                key={JSON.stringify(resolvedParams)}
-                fallback={
-                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                    {Array.from({ length: 6 }).map((_, i) => (
-                      <div
-                        key={i}
-                        className="aspect-[3/4] w-full animate-pulse border border-[#1C1E24] bg-[#0E0E11]"
-                      />
-                    ))}
-                  </div>
-                }
-              >
-                <ProductGrid
-                  query={resolvedParams.query}
-                  size={resolvedParams.size}
-                  category={resolvedParams.category}
-                  limit={resolvedParams.limit}
-                />
-              </Suspense>
-            </section>
-
-          </div>
-        </main>
-      </div>
+          {/* ProductGrid сам робить всю логіку фільтрації та пагінації за URL-параметрами */}
+          <section>
+            <ProductGrid
+              category={currentCategory}
+              size={currentSize}
+              query={searchQuery}
+              limit={limit}
+            />
+          </section>
+        </div>
+      </main>
 
       <Footer />
     </div>

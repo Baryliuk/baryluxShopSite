@@ -42,14 +42,29 @@ export default function FiltersSidebar({
     };
   }, [isOpenMobile]);
 
-  const updateParam = (key: string, value: string) => {
+const updateParam = (key: string, value: string) => {
     const params = new URLSearchParams(searchParams.toString());
 
-    if (params.get(key)?.toUpperCase() === value.toUpperCase()) {
-      params.delete(key);
+    if (key === 'category') {
+      // Якщо клікають на категорію:
+      // 1. Завжди скидаємо вибраний розмір, бо сітка розмірів міняється
+      params.delete('size');
+
+      // 2. Перемикаємо або знімаємо саму категорію
+      if (params.get(key)?.toUpperCase() === value.toUpperCase()) {
+        params.delete(key);
+      } else {
+        params.set(key, value);
+      }
     } else {
-      params.set(key, value);
+      // Для інших фільтрів (наприклад, розміру) стандартна логіка перемикання
+      if (params.get(key)?.toUpperCase() === value.toUpperCase()) {
+        params.delete(key);
+      } else {
+        params.set(key, value);
+      }
     }
+
     params.delete('limit');
 
     startTransition(() => {

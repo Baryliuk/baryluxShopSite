@@ -22,6 +22,13 @@ interface CategoryItem {
   parentId?: string;
 }
 
+// Нормалізація назви категорії (прибирає різницю в регістрі та зайві пробіли)
+export function normalizeCategoryName(name: string): string {
+  if (!name) return "Без категорії";
+  const trimmed = name.trim().toLowerCase();
+  return trimmed.charAt(0).toUpperCase() + trimmed.slice(1);
+}
+
 function extractSize(param: unknown): string {
   if (!param) return "Універсальний";
 
@@ -71,8 +78,8 @@ export const fetchingProducts = cache(async (): Promise<GroupedProduct[]> => {
     const categoriesArray = Array.isArray(rawCategories)
       ? rawCategories
       : rawCategories
-        ? [rawCategories]
-        : [];
+      ? [rawCategories]
+      : [];
 
     const catLookup: Record<string, CategoryItem> = {};
     for (const cat of categoriesArray) {
@@ -115,7 +122,7 @@ export const fetchingProducts = cache(async (): Promise<GroupedProduct[]> => {
       return {
         group_id: String(baseOffer?.group_id || baseOffer?.id),
         category_id: leafId,
-        category_name: categoryName,
+        category_name: normalizeCategoryName(categoryName), // Нормалізуємо одразу на виході
         category_ids: categoryIds,
         name: String(baseOffer?.name || "Без назви").trim(),
         price: Number(baseOffer?.price) || 0,
