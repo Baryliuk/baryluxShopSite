@@ -61,8 +61,7 @@ export default async function ProfilePage() {
 
   // 2. Fetch User
   let deliveryAddress: IDeliveryAddress | null = null;
-  const userOrders = []; // Порожній масив, поки немає розробленої схеми Order
-
+  const userOrders: any[] = [];
   const userEmail = session.user.email;
 
   if (userEmail) {

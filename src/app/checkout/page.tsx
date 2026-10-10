@@ -26,19 +26,21 @@ export default async function CheckoutPage() {
       const dbUser = await User.findOne({ email: session.user.email }).lean();
 
       if (dbUser) {
-        if (dbUser.name || dbUser.fullName) {
-          initialCustomer.fullName = dbUser.fullName || dbUser.name || "";
+        const typedUser = dbUser as any;
+
+        if (typedUser.name || typedUser.fullName) {
+          initialCustomer.fullName = typedUser.fullName || typedUser.name || "";
         }
         
-        if (dbUser.phone) {
-          initialCustomer.phone = dbUser.phone;
+        if (typedUser.phone) {
+          initialCustomer.phone = typedUser.phone;
         }
 
-        if (dbUser.deliveryAddress) {
-          initialCustomer.fullName = dbUser.deliveryAddress.fullName || initialCustomer.fullName;
-          initialCustomer.phone = dbUser.deliveryAddress.phone || initialCustomer.phone;
-          initialDelivery.city = dbUser.deliveryAddress.city || "";
-          initialDelivery.warehouse = dbUser.deliveryAddress.warehouse || "";
+        if (typedUser.deliveryAddress) {
+          initialCustomer.fullName = typedUser.deliveryAddress.fullName || initialCustomer.fullName;
+          initialCustomer.phone = typedUser.deliveryAddress.phone || initialCustomer.phone;
+          initialDelivery.city = typedUser.deliveryAddress.city || "";
+          initialDelivery.warehouse = typedUser.deliveryAddress.warehouse || "";
         }
       }
     } catch (error) {
